@@ -1,0 +1,127 @@
+/* ==== RESPONSIVE FIX UNTUK SB ADMIN v4 === */
+
+/* Sidebar behavior di HP */
+@media (max-width: 991.98px) {
+  #mainNav .navbar-collapse .navbar-sidenav {
+    position: fixed;
+    top: 56px;
+    left: -250px;
+    width: 230px;
+    height: calc(100vh - 56px);
+    background-color: #132A4A;
+    overflow-y: auto;
+    transition: left 0.3s ease;
+    z-index: 1030;
+  }
+
+  #mainNav .navbar-collapse .navbar-sidenav.active {
+    left: 0;
+  }
+
+  /* Tombol toggle sidebar muncul */
+  #sidenavToggler {
+    display: inline-block;
+  }
+
+  /* Konten geser dikit biar gak ketimpa navbar */
+  .content-wrapper {
+    margin-left: 0 !important;
+    padding: 70px 10px 20px;
+    min-height: 100vh;
+  }
+
+  /* Navbar & user dropdown rapih */
+  .navbar-nav.ml-auto {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .nav-link {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+
+  /* Footer tidak nabrak konten */
+  footer.sticky-footer {
+    position: relative;
+    width: 100%;
+    height: auto;
+    line-height: normal;
+    padding: 15px;
+    text-align: center;
+    background-color: #132A4A;
+    color: #fff;
+  }
+
+  /* Table scrollable */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* Modal responsif */
+  .modal-dialog {
+    margin: 10px auto;
+  }
+
+  /* Logo kecil di navbar */
+  .navbar-brand img {
+    height: 35px !important;
+  }
+}
+
+/* Breadcrumb & konten spacing */
+.breadcrumb {
+  font-size: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+/* Tombol & link responsif */
+.btn {
+  border-radius: 6px;
+}
+
+a.scroll-to-top {
+  bottom: 10px;
+  right: 10px;
+}
+
+/* Loading overlay adaptif */
+#loading img {
+  width: 60px;
+  height: 60px;
+  margin-top: 50%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Hover & warna sidebar */
+.bg_tem {
+  background-color: #132A4A !important;
+}
+
+.bg li a:hover {
+  background-color: #F02828 !important;
+}
+
+/* Fix untuk layar sangat kecil (<=576px) */
+@media (max-width: 576px) {
+  .navbar-brand img {
+    height: 28px !important;
+  }
+
+  .breadcrumb {
+    font-size: 12px;
+  }
+
+  footer.sticky-footer small {
+    font-size: 12px;
+  }
+
+  .nav-link-text {
+    font-size: 13px;
+  }
+}

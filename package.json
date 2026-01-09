@@ -1,0 +1,17 @@
+{
+  "name": "bintang-biru-teknik",
+  "version": "1.0.0",
+  "description": "Bintang-Biru-Teknik",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^4.6.2",
+    "jquery": "^3.7.1",
+    "popper.js": "^1.16.1"
+  }
+}

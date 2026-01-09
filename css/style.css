@@ -1,0 +1,162 @@
+/*css barang.php*/
+.pop_cari{
+	position:absolute;
+	color:#FFF;
+	min-width:350px;
+	height:200px; 
+	z-index:100;
+	background:#E60938;
+	box-shadow:0 0 20px #33FF33;
+	border-radius:10px;
+	overflow:scroll;
+    display:none;
+}
+
+.hover li:hover{
+	background-color:#2CF6F4;
+	border-radius: 5px;
+	cursor:default;
+}
+.hover{
+	list-style: none;
+	text-align:left;
+	padding: 3px;
+}
+
+/*index.php atau halaman_utama.php*/
+.border{
+	height: 150px;
+	padding: 60px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 20px;
+}
+.border a{
+	text-decoration: none;
+	color: black;
+}
+
+/* ========================================= */
+/* === RESPONSIVE FIX UNTUK HOME.PHP ======= */
+/* ========================================= */
+
+/* Pastikan sidebar bisa geser di layar kecil */
+.navbar-nav.navbar-sidenav {
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 992px) {
+  /* Sidebar collapse otomatis */
+  #exampleAccordion {
+    position: absolute;
+    z-index: 1000;
+    width: 230px;
+    height: 100vh;
+    overflow-y: auto;
+    background-color: #132A4A !important;
+    left: -250px;
+    transition: left 0.3s ease;
+  }
+
+  #exampleAccordion.active {
+    left: 0;
+  }
+
+  /* Tampilkan tombol toggle sidebar */
+  #sidenavToggler {
+    display: inline-block;
+  }
+
+  /* Navbar lebih rapat di layar kecil */
+  .navbar-brand img {
+    height: 35px !important;
+  }
+
+  .navbar-nav.ml-auto {
+    flex-direction: row;
+  }
+
+  .nav-link {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+
+  /* Konten utama biar tidak ketimpa sidebar */
+  .content-wrapper {
+    padding-top: 80px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  /* Breadcrumb font lebih kecil */
+  .breadcrumb {
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+}
+
+/* Tabel responsif */
+table {
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+/* Modal dan tombol logout responsif */
+.modal-content {
+  border-radius: 10px;
+}
+
+.btn {
+  border-radius: 6px;
+}
+
+/* Footer fix di bawah */
+footer.sticky-footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  background: #132A4A;
+  color: #fff;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Loading overlay biar adaptif */
+#loading img {
+  width: 50px;
+  height: 50px;
+  margin-top: 40%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+/* Warna navbar & hover */
+.bg_tem {
+  background-color: #132A4A !important;
+}
+
+.bg li a:hover {
+  background-color: #F02828;
+}
+
+/* Pastikan isi dashboard rapi di mobile */
+.container-fluid {
+  padding: 10px;
+}
+
+@media (max-width: 576px) {
+  .nav-link-text {
+    font-size: 13px;
+  }
+
+  .navbar-brand img {
+    height: 30px !important;
+  }
+
+  footer.sticky-footer small {
+    font-size: 12px;
+  }
+}
