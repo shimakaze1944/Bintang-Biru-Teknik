@@ -1,6 +1,6 @@
 <?php 
 session_start();
-include_once("koneksi.php");
+include_once(__DIR__ . '/controller/auth/db_connection.php');
 date_default_timezone_get("asia/jakarta");
 $tgl=date('Y-m-d');
 $pro=$_GET['pro'];

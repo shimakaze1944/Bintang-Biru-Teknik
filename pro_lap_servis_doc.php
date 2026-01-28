@@ -65,7 +65,7 @@
 	<?php 
 	date_default_timezone_set("asia/jakarta");
 		set_time_limit(0);
-		include_once("koneksi.php");
+		include_once(__DIR__ . '/controller/auth/db_connection.php');
 		@$lap_svs_fak=$_GET['lap_svs_fak'];
 		@$lap_tgl_awal_svs=$_GET['lap_tgl_awal_svs'];
 		@$lap_tgl_akhir_svs=$_GET['lap_tgl_akhir_svs'];

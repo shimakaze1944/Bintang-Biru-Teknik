@@ -63,7 +63,7 @@ ob_start();
 		error_reporting(E_ALL^(E_NOTICE|E_DEPRECATED));
 		set_time_limit(0);
 		date_default_timezone_set("asia/jakarta");
-		include_once("koneksi.php");
+		include_once(__DIR__ . '/controller/auth/db_connection.php');
 		@$lap_mbl_id=$_GET['lap_mbl_id'];
 
 		@$lap_tgl_awal_klm=$_GET['lap_tgl_awal_klm'];

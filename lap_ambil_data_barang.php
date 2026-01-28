@@ -1,6 +1,6 @@
 <?php 
 session_start();
-include_once("koneksi.php");
+include_once(__DIR__ . '/controller/auth/db_connection.php');
 $pro=$_GET['pro'];
 switch ($pro) {
 	// case pencarian data admin

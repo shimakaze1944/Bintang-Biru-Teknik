@@ -1,7 +1,7 @@
 <?php
 ob_start();
 session_start();
-include_once("koneksi.php");
+include_once(__DIR__ . '/controller/auth/db_connection.php');
 
 $lgn_user = $_POST['lgn_user'] ?? '';
 $lgn_pass = $_POST['lgn_pass'] ?? '';

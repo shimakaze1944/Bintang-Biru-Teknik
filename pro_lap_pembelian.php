@@ -58,7 +58,7 @@
 <body>
 	<?php 
 		date_default_timezone_set("asia/jakarta");
-		include_once("koneksi.php");
+		include_once(__DIR__ . '/controller/auth/db_connection.php');
 		set_time_limit(0);
 		@$lap_pbl_fak=$_GET['lap_pbl_fak'];
 		@$lap_tgl_awal_pbl=$_GET['lap_tgl_awal_beli'];	

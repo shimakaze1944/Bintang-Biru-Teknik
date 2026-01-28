@@ -7,14 +7,14 @@
 					  
 				</ul>
 			<div id="usr_divisi" style="margin-left: 1%;margin-bottom: 1%;">
-				<h1><p class="text-center"><b>Master User</b></p></h1><hr />
+				<h1><p class="text-center"><b>Tambah User</b></p></h1><hr />
 				<form id="usr_form">
 					<!-- status user -->
 					<div class="form-group row">
 				    	<label for="inputPassword3" class="col-sm-3 control-label"><p class="text-left font-weight-normal">Status User</p></label>
 					    <div class="col-sm-7">
 					    	<select name="usr_status" id="usr_status" class="usr_status form-control">
-					    		<option value="">===Pilih Status User===</option>
+					    		<option value="">Pilih Status User</option>
 					    		<option value="SBU"> SBU (Strategic Bussines Unit)</option>
 					    		<option value="Staff"> Staff</option>
 					    		

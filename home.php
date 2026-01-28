@@ -7,6 +7,7 @@ if(empty($_SESSION['sess_usr_id'])){
 ?>
 <!DOCTYPE html>
 <html lang="en">
+  
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -23,30 +24,48 @@ if(empty($_SESSION['sess_usr_id'])){
   <link rel="stylesheet" href="css/style.css">
 
   <style>
+    /* Transisi halus */
+    .content-wrapper {
+      transition: padding-top 0.4s ease;
+    }
+
     body {
       background-color: #f8f9fa;
     }
+
+    /* Navbar dan sidebar tetap di atas */
     #mainNav {
       background-color: #132A4A !important;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1040;
     }
+
     #mainNav .navbar-sidenav {
       background-color: #132A4A !important;
     }
+
     #mainNav .navbar-sidenav li a {
       color: #fff !important;
     }
+
     #mainNav .navbar-sidenav li a:hover {
       background-color: #0B97A4 !important;
       color: #fff;
     }
+
     .content-wrapper {
       background: #fff;
-      padding: 20px;
+      padding: 100px 20px 20px 20px; /* kasih jarak default biar gak ketabrak navbar */
       min-height: calc(100vh - 56px);
     }
+
     footer.sticky-footer {
       background-color: #e9ecef;
     }
+
     @media (max-width: 991px) {
       #mainNav .navbar-sidenav {
         position: fixed;
@@ -62,7 +81,7 @@ if(empty($_SESSION['sess_usr_id'])){
       }
       .content-wrapper {
         margin-left: 0 !important;
-        padding-top: 70px;
+        padding-top: 90px;
       }
     }
   </style>
@@ -190,13 +209,23 @@ if(empty($_SESSION['sess_usr_id'])){
   <script src="js/sb-admin.js"></script>
 
   <script>
-    $(function(){
-      // dropdown fix
-      $('.nav-link.collapsed').on('click', function(e){
-        const target = $(this).attr('href');
-        $(target).collapse('toggle');
-      });
+  $(function(){
+    // Tambah padding-top lebih besar kalau dropdown dibuka
+    $('.navbar-sidenav .collapse').on('show.bs.collapse', function(){
+      $('.content-wrapper').css('padding-top', '180px');
     });
+
+    // Balikin padding-top kalau dropdown ditutup
+    $('.navbar-sidenav .collapse').on('hide.bs.collapse', function(){
+      $('.content-wrapper').css('padding-top', '100px');
+    });
+
+    // Toggle collapse menu
+    $('.nav-link.collapsed').on('click', function(e){
+      const target = $(this).attr('href');
+      $(target).collapse('toggle');
+    });
+  });
   </script>
 </body>
 </html>
