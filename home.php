@@ -1,16 +1,23 @@
-<?php 
-session_start();
-if(empty($_SESSION['sess_usr_id'])){
-  header('location:index.php');
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+if (!isset($_SESSION['sess_usr_id'])) {
+  header("Location: index.php");
   exit;
 }
+
+$isAdmin = in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik']);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>PT. World Trans | Home</title>
+  <title>Bintang Biru Teknik | Home</title>
   <link rel="shortcut icon" href="image/logo.png">
 
   <!-- Bootstrap & Icons -->
@@ -23,30 +30,71 @@ if(empty($_SESSION['sess_usr_id'])){
   <link rel="stylesheet" href="css/style.css">
 
   <style>
+    #collapseMaster {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    #collapseMaster li {
+      margin-bottom: 4px;
+    }
+
+
+    #collapseMaster li a {
+      display: block;
+      padding: 10px 18px;
+      text-align: left;
+      font-size: 15px;
+      color: #ffffffcc;
+      border-radius: 6px;
+    }
+
+    #collapseMaster li a:hover {
+      background-color: #0B97A4;
+      color: #fff;
+    }
+
+    .content-wrapper {
+      transition: padding-top 0.4s ease;
+    }
+
     body {
       background-color: #f8f9fa;
     }
+
+    /* Navbar */
     #mainNav {
       background-color: #132A4A !important;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1040;
     }
+
     #mainNav .navbar-sidenav {
       background-color: #132A4A !important;
     }
+
     #mainNav .navbar-sidenav li a {
       color: #fff !important;
     }
+
     #mainNav .navbar-sidenav li a:hover {
       background-color: #0B97A4 !important;
       color: #fff;
     }
+
     .content-wrapper {
       background: #fff;
-      padding: 20px;
-      min-height: calc(100vh - 56px);
+      padding: 100px 20px 20px 20px;
+      min-height: calc(300vh - 56px);
     }
+
     footer.sticky-footer {
       background-color: #e9ecef;
     }
+
     @media (max-width: 991px) {
       #mainNav .navbar-sidenav {
         position: fixed;
@@ -57,12 +105,14 @@ if(empty($_SESSION['sess_usr_id'])){
         transition: all 0.3s;
         z-index: 1030;
       }
+
       #mainNav .navbar-sidenav.active {
         left: 0;
       }
+
       .content-wrapper {
         margin-left: 0 !important;
-        padding-top: 70px;
+        padding-top: 90px;
       }
     }
   </style>
@@ -83,55 +133,70 @@ if(empty($_SESSION['sess_usr_id'])){
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
 
-        <li class="nav-item active">
-          <a class="nav-link" href="home.php">
-            <i class="fa fa-fw fa-dashboard"></i> Dashboard
-          </a>
-        </li>
+        <?php if ($isAdmin): ?>
 
-        <!-- Master -->
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#collapseMaster" data-toggle="collapse">
-            <i class="fa fa-fw fa-cog"></i> Master
-          </a>
-          <ul class="sidenav-second-level collapse" id="collapseMaster">
-            <li><a href="?cs=Master-User"><i class="fa fa-user-circle-o"></i> Master User</a></li>
-            <li><a href="?cs=Master-Satuan"><i class="fa fa-cubes"></i> Master Satuan Barang</a></li>
-            <li><a href="?cs=Master-Kategori"><i class="fa fa-cubes"></i> Master Kategori Barang</a></li>
-            <li><a href="?cs=Master-Barang"><i class="fa fa-cubes"></i> Master Barang</a></li>
-            <li><a href="?cs=Master-Mekanik"><i class="fa fa-user-circle-o"></i> Master Mekanik</a></li>
-            <li><a href="?cs=Master-Supplier"><i class="fa fa-user-circle-o"></i> Master Supplier</a></li>
-            <li><a href="?cs=Master-Supir"><i class="fa fa-user-circle-o"></i> Master Supir</a></li>
-            <li><a href="?cs=Master-Mobil"><i class="fa fa-car"></i> Master Mobil</a></li>
-            <li><a href="?cs=Master-Keterangan-Posisi"><i class="fa fa-cogs"></i> Master Keterangan Posisi</a></li>
-          </ul>
-        </li>
+          <!-- ================= MENU ADMIN ================= -->
 
-        <!-- Transaksi -->
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#collapseTransaksi" data-toggle="collapse">
-            <i class="fa fa-fw fa-file"></i> Transaksi
-          </a>
-          <ul class="sidenav-second-level collapse" id="collapseTransaksi">
-            <li><a href="?cs=Transaksi-Pembelian"><i class="fa fa-shopping-basket"></i> Transaksi Pembelian</a></li>
-            <li><a href="?cs=Transaksi-Servis"><i class="fa fa-car"></i> Transaksi Servis Mobil</a></li>
-            <li><a href="?cs=Transaksi-Klaim"><i class="fa fa-file"></i> Transaksi Klaim Bon</a></li>
-          </ul>
-        </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="home.php">
+              <i class="fa fa-fw fa-dashboard"></i> Dashboard
+            </a>
+          </li>
 
-        <!-- Laporan -->
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#collapseLaporan" data-toggle="collapse">
-            <i class="fa fa-fw fa-book"></i> Laporan
-          </a>
-          <ul class="sidenav-second-level collapse" id="collapseLaporan">
-            <li><a href="?cs=Laporan-Pembelian"><i class="fa fa-book"></i> Laporan Pembelian</a></li>
-            <li><a href="?cs=Laporan-Servis"><i class="fa fa-book"></i> Laporan Servis Mobil</a></li>
-            <li><a href="?cs=Laporan-Persedian-Barang"><i class="fa fa-book"></i> Laporan Barang</a></li>
-            <li><a href="?cs=Laporan-Klaim"><i class="fa fa-book"></i> Laporan Klaim Bon</a></li>
-          </ul>
-        </li>
+          <li class="nav-item">
+            <a class="nav-link collapsed" href="#collapseMaster" data-toggle="collapse">
+              <i class="fa fa-fw fa-database"></i> Master Data
+            </a>
+            <ul class="sidenav-second-level collapse" id="collapseMaster">
+              <?php if ($_SESSION['sess_usr_status'] === 'Admin'): ?>
+                <li><a href="?cs=Master-User"><i class="fa fa-user"></i> User</a></li>
+              <?php endif; ?>
+              <li><a href="?cs=Master-Kapal"><i class="fa fa-ship"></i> Kapal</a></li>
+              <li><a href="?cs=Master-Pekerja"><i class="fa fa-building"></i> Teknisi</a></li>
+              <li><a href="?cs=Master-Layanan"><i class="fa fa-wrench"></i> Layanan</a></li>
+              <li><a href="?cs=Master-Vendor"><i class="fa fa-industry"></i> Vendor</a></li>
+            </ul>
+          </li>
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="?cs=Service">
+              <i class="fa fa-fw fa-wrench"></i> Service
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="?cs=History">
+              <i class="fa fa-fw fa-history"></i> History
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="?cs=Cashflow">
+              <i class="fa fa-fw fa-money"></i> Cashflow
+            </a>
+          </li>
+
+        <?php else: ?>
+
+          <!-- ================= MENU CUSTOMER ================= -->
+
+          <li class="nav-item active">
+            <a class="nav-link" href="home.php">
+              <i class="fa fa-fw fa-dashboard"></i> Dashboard
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="?cs=History">
+              <i class="fa fa-fw fa-history"></i> History Servis
+            </a>
+          </li>
+
+        <?php endif; ?>
+
       </ul>
+
 
       <!-- Top Nav -->
       <ul class="navbar-nav ml-auto">
@@ -156,33 +221,32 @@ if(empty($_SESSION['sess_usr_id'])){
   <!-- Content -->
   <div class="content-wrapper">
     <div class="container-fluid">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-        <li class="breadcrumb-item active"><?php echo @$_GET['cs']; ?></li>
-      </ol>
-      <?php include_once('halaman.php'); ?>
+      <?php include_once('pages.php'); ?>
     </div>
   </div>
 
   <!-- Footer -->
   <footer class="sticky-footer">
     <div class="container text-center">
-      <small>Copyright &copy; PT. World Trans 2025</small>
+      <small>Copyright &copy; Bintang Biru Teknik 2025</small>
     </div>
   </footer>
 
   <!-- Logout Modal -->
   <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog"><div class="modal-content">
-      <div class="modal-header"><h5>Anda Yakin Akan Keluar?</h5></div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <a class="btn btn-primary" href="pro_logout.php">Logout</a>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5>Anda Yakin Akan Keluar?</h5>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="controller/auth/logout_controller.php">Logout</a>
+        </div>
       </div>
-    </div></div>
+    </div>
   </div>
 
-  <!-- JS Dependencies -->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
   <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
@@ -190,13 +254,24 @@ if(empty($_SESSION['sess_usr_id'])){
   <script src="js/sb-admin.js"></script>
 
   <script>
-    $(function(){
-      // dropdown fix
-      $('.nav-link.collapsed').on('click', function(e){
+    $(function () {
+      // Tambah padding-top kalo dropdown dibuka
+      $('.navbar-sidenav .collapse').on('show.bs.collapse', function () {
+        $('.content-wrapper').css('padding-top', '180px');
+      });
+
+      // Balikin padding-top kalau dropdown ditutup
+      $('.navbar-sidenav .collapse').on('hide.bs.collapse', function () {
+        $('.content-wrapper').css('padding-top', '100px');
+      });
+
+      // Toggle collapse menu
+      $('.nav-link.collapsed').on('click', function (e) {
         const target = $(this).attr('href');
         $(target).collapse('toggle');
       });
     });
   </script>
 </body>
+
 </html>

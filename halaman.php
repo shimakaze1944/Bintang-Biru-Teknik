@@ -1,8 +1,10 @@
 <?php 
-@$cs=$_GET['cs'];
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+$cs = $_GET['cs'] ?? '';
 switch ($cs) {
 	case 'Master-User':
-		include_once('master_user.php');
+    	include_once(__DIR__ . '/view/master_user.php');
 		break;
 	case 'Master-Kategori':
 		include_once('master_kategori_barang.php');
@@ -59,6 +61,7 @@ switch ($cs) {
 		include_once("dashboard.php");
 		break;
 }
+echo "<div style='color:green;'>DEBUG: halaman.php aktif, cs = '$cs'</div>";
 
  ?>
 
