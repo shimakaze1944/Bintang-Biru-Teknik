@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 $cs = $_GET['cs'] ?? '';
 switch ($cs) {
 	case 'Master-User':
-		include_once('master_user.php');
+    	include_once(__DIR__ . '/view/master_user.php');
 		break;
 	case 'Master-Kategori':
 		include_once('master_kategori_barang.php');

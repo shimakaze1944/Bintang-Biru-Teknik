@@ -1,180 +1,328 @@
-<div class="cc" id="frm-cus" style="background-color: #E3DEDE;">
-  <div class="posisi">
-    <ul class="nav nav-tabs">
-      <li role="presentation" class="active">
-        <input type="button" name="usr_btn_input" class="btn btn-danger" id="usr_btn_input" value="Input User">
-      </li>
-      <li role="presentation">
-        <input type="button" name="usr_btn_select" class="btn btn-primary" id="usr_btn_select" value="Data User">
-      </li>
-    </ul>
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-    <div id="usr_divisi" style="margin-left: 1%;margin-bottom: 1%;">
-      <h1><p class="text-center"><b>Tambah User</b></p></h1><hr />
-      <form id="usr_form">
-        <!-- Status user -->
-        <div class="form-group row">
-          <label class="col-sm-3 control-label"><p class="text-left font-weight-normal">Status User</p></label>
-          <div class="col-sm-7">
-            <select name="usr_status" id="usr_status" class="form-control">
-              <option value="">Pilih Status User</option>
+if (session_status() === PHP_SESSION_NONE)
+  session_start();
+include_once(__DIR__ . '/../controller/auth/db_connection.php');
+
+// Hanya Admin yang bisa masuk ke manajemen user
+if ($_SESSION['sess_usr_status'] !== 'Admin') {
+  echo "<div class='alert alert-danger text-center mt-4'>
+          Akses ditolak! Halaman ini hanya untuk Admin.
+        </div>";
+  exit;
+}
+
+?>
+
+<div class="container-fluid px-4 mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">👥 Manajemen User</h4>
+    <button class="btn btn-primary" id="btnAddUser">
+      <i class="fa fa-user-plus"></i> Tambah User
+    </button>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead class="table-light text-center">
+            <tr>
+              <th>No</th>
+              <th>Username</th>
+              <th>Nama Lengkap</th>
+              <th>Email</th>
+              <th>Vendor</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            $no = 1;
+            $q = $conn->query("SELECT u.*, v.vendor_name 
+                               FROM tbl_user u 
+                               LEFT JOIN tbl_vendor v ON u.vendor_id = v.vendor_id 
+                               ORDER BY u.usr_id DESC");
+
+            if ($q && $q->num_rows > 0) {
+              while ($row = $q->fetch_assoc()) {
+                echo "<tr>
+                        <td class='text-center'>$no</td>
+                        <td>{$row['usr_username']}</td>
+                        <td>{$row['usr_nama']}</td>
+                        <td>{$row['usr_email']}</td>
+                        <td>" . ($row['vendor_name'] ?? '-') . "</td>
+                        <td class='text-center'>
+                          <span style='color:white; padding:5px;' class='badge bg-" . (
+                  $row['usr_status'] == 'Admin' ? 'primary' :
+                  ($row['usr_status'] == 'BBTeknik' ? 'info' : 'success')
+                ) . "'>{$row['usr_status']}</span>
+                        </td>
+                        <td class='text-center'>
+                          <button class='btn btn-sm btn-warning me-1 btnEditUser' data-id='{$row['usr_id']}'>
+                            <i class='fa fa-edit'></i> Ubah
+                          </button>
+                          <button class='btn btn-sm btn-danger me-1 btnDeleteUser' data-id='{$row['usr_id']}'>
+                            <i class='fa fa-trash'></i> Hapus
+                          </button>
+                          <button class='btn btn-sm btn-info btnResetPass' data-id='{$row['usr_id']}'>
+                            <i class='fa fa-key'></i> Reset Password
+                          </button>
+                        </td>
+                      </tr>";
+                $no++;
+              }
+            } else {
+              echo "<tr><td colspan='7' class='text-center text-muted'>Belum ada user terdaftar</td></tr>";
+            }
+            ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah/Edit User -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="userModalLabel"><i class="fa fa-user-plus me-2"></i><span id="modalTitle">Tambah
+            User</span></h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form id="userForm" method="POST" action="controller/user/pro_master_user.php">
+        <div class="modal-body">
+          <input type="hidden" name="usr_id" id="usr_id">
+          <input type="hidden" name="action" id="form_action" value="create">
+
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" name="usr_username" id="username" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Nama Lengkap</label>
+            <input type="text" name="usr_nama" id="nama" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="usr_email" id="email" class="form-control" required>
+          </div>
+
+          <div class="mb-3" id="passwordField">
+            <label class="form-label">Password</label>
+            <input type="password" name="usr_pass" id="password" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select name="usr_status" id="status" class="form-control" required>
+              <option value="" disabled selected>Pilih Status</option>
               <option value="Admin">Admin</option>
+              <option value="BBTeknik">BB Teknik</option>
               <option value="Customer">Customer</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Vendor</label>
+            <select name="vendor_id" id="vendor_id" class="form-control">
+              <option value="">-- Pilih Vendor --</option>
+              <?php
+              $v = $conn->query("SELECT * FROM tbl_vendor ORDER BY vendor_name ASC");
+              while ($ven = $v->fetch_assoc()) {
+                echo "<option value='{$ven['vendor_id']}'>{$ven['vendor_name']}</option>";
+              }
+              ?>
             </select>
           </div>
         </div>
 
-        <!-- Nama user -->
-        <div class="form-group row">
-          <label class="col-sm-3 control-label"><p class="text-left font-weight-normal">Nama User</p></label>
-          <div class="col-sm-7">
-            <input type="text" name="usr_nama" class="form-control" id="usr_nama" placeholder="Nama User" maxlength="30" required>
-          </div>
-        </div>
-
-        <!-- Alamat -->
-        <div class="form-group row">
-          <label class="col-sm-3 control-label"><p class="text-left font-weight-normal">Alamat</p></label>
-          <div class="col-sm-7">
-            <textarea name="usr_alamat" class="form-control" id="usr_alamat" placeholder="Alamat User" cols="30" rows="4" maxlength="100"></textarea>
-          </div>
-        </div>
-
-        <!-- Email -->
-        <div class="form-group row">
-          <label class="col-sm-3 control-label"><p class="text-left font-weight-normal">Email</p></label>
-          <div class="col-sm-7">
-            <input type="email" name="usr_email" id="usr_email" class="form-control" placeholder="example@gmail.com" maxlength="40" required autocomplete="off">
-          </div>
-        </div>
-
-        <!-- Telepon -->
-        <div class="form-group row">
-          <label class="col-sm-3 control-label"><p class="text-left font-weight-normal">No Telepon</p></label>
-          <div class="col-sm-7">
-            <input type="text" name="usr_tlp" id="usr_tlp" class="form-control" maxlength="13" placeholder="08999385257" required>
-          </div>
-        </div>
-
-        <!-- Password -->
-        <div class="form-group row">
-          <label class="col-sm-3 control-label"><p class="text-left font-weight-normal">Password</p></label>
-          <div class="col-sm-7 input-group mb-3">
-            <input type="password" name="usr_pass" id="usr_pass" class="form-control" maxlength="64" placeholder="Minimal 8 karakter" required>
-            <div class="input-group-append">
-              <button class="btn btn-outline-secondary toggle-pw" type="button" data-target="#usr_pass"><i class="fa fa-eye"></i></button>
-              <span class="true_pass input-group-text fa fa-lg fa-check" style="color:green;display:none;"></span>
-              <span class="false_pass input-group-text fa fa-lg fa-times" style="color:red;display:none;"></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Konfirmasi Password -->
-        <div class="form-group row">
-          <label class="col-sm-3 control-label"><p class="text-left font-weight-normal">Konfirmasi Password</p></label>
-          <div class="col-sm-7 input-group mb-3">
-            <input type="password" name="usr_konfir_pass" id="usr_konfir_pass" class="form-control" maxlength="64" placeholder="Ketik ulang password" required>
-            <div class="input-group-append">
-              <button class="btn btn-outline-secondary toggle-pw" type="button" data-target="#usr_konfir_pass"><i class="fa fa-eye"></i></button>
-              <span class="true_konfir input-group-text fa fa-lg fa-check" style="color:green;display:none;"></span>
-              <span class="false_konfir input-group-text fa fa-lg fa-times" style="color:red;display:none;"></span>
-            </div>
-          </div>
-          <span class="warning_max" style="display:none;color:red;">Password minimal 8 karakter</span>
-        </div>
-
-        <!-- Tombol Save -->
-        <div class="row">
-          <div class="col-md-7 offset-md-3">
-            <button type="button" id="usr_simpan" class="btn btn-md btn-primary btn-block" disabled>
-              <span class="fa fa-fw fa-save"></span> Save
-            </button>
-          </div>
+        <div class="modal-footer">
+          <button type="submit" name="save_user" class="btn btn-success">Simpan</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
+<!-- MODAL RESET PASSWORD -->
+<div class="modal fade" id="resetPassModal" tabindex="-1" aria-labelledby="resetPassLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title"><i class="fa fa-key me-2"></i>Reset Password User</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form id="resetPassForm">
+        <div class="modal-body">
+          <input type="hidden" name="usr_id" id="reset_usr_id">
+
+          <div class="form-group mb-3">
+            <label>Password Baru</label>
+            <input type="text" name="new_pass" id="new_pass" class="form-control" required minlength="6"
+              placeholder="Masukkan password baru">
+          </div>
+
+          <div class="form-group mb-3">
+            <label>Konfirmasi Password Baru</label>
+            <input type="text" name="confirm_pass" id="confirm_pass" class="form-control" required minlength="6"
+              placeholder="Ulangi password baru">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Simpan</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
 <script>
-$(document).ready(function(){
-  const $pw = $('#usr_pass');
-  const $pw2 = $('#usr_konfir_pass');
-  const $saveBtn = $('#usr_simpan');
-  const $warning = $('.warning_max');
+  setTimeout(function () {
+    console.log('Binding ulang semua event...');
 
-  // Toggle show/hide password
-  $(document).on('click', '.toggle-pw', function(){
-    const target = $(this).data('target');
-    const $input = $(target);
-    const $icon = $(this).find('i');
+    const userModal = $('#userModal');
+    const resetModal = $('#resetPassModal');
 
-    if($input.attr('type') === 'password'){
-      $input.attr('type', 'text');
-      $icon.removeClass('fa-eye').addClass('fa-eye-slash');
-    } else {
-      $input.attr('type', 'password');
-      $icon.removeClass('fa-eye-slash').addClass('fa-eye');
-    }
-  });
-
-  // Validasi password real-time
-  function validatePasswords(){
-    const v1 = $pw.val();
-    const v2 = $pw2.val();
-    const enoughLen = v1.length >= 8;
-
-    // panjang minimal
-    if(!enoughLen && v1.length>0){
-      $warning.show();
-    } else {
-      $warning.hide();
-    }
-
-    // indikator password valid
-    if(enoughLen){
-      $('.true_pass').show(); $('.false_pass').hide();
-    } else if(v1.length>0){
-      $('.true_pass').hide(); $('.false_pass').show();
-    } else {
-      $('.true_pass, .false_pass').hide();
-    }
-
-    // indikator cocok / tidak
-    if(v2.length>0 && v1 === v2 && enoughLen){
-      $('.true_konfir').show(); $('.false_konfir').hide();
-    } else if(v2.length>0){
-      $('.true_konfir').hide(); $('.false_konfir').show();
-    } else {
-      $('.true_konfir, .false_konfir').hide();
-    }
-
-    // tombol Save aktif hanya kalau valid
-    if(enoughLen && v1 === v2){
-      $saveBtn.prop('disabled', false);
-    } else {
-      $saveBtn.prop('disabled', true);
-    }
-  }
-
-  $pw.on('input', validatePasswords);
-  $pw2.on('input', validatePasswords);
-
-  // Simpan user
-  $('#usr_simpan').on('click', function(e){
-    e.preventDefault();
-    const data = $('#usr_form').serialize();
-    $(this).prop('disabled', true).text('Saving...');
-
-    $.post('pro_master_user.php', data, function(resp){
-      alert(resp);
-      $('#usr_simpan').prop('disabled', false).text('Save');
-      $('#usr_form')[0].reset();
-      validatePasswords();
-    }).fail(function(){
-      alert('Terjadi kesalahan koneksi.');
-      $('#usr_simpan').prop('disabled', false).text('Save');
+    // Fokus ke input password baru saat modal reset tampil
+    resetModal.on('shown.bs.modal', function () {
+      $('#new_pass').trigger('focus');
     });
-  });
-});
+
+
+    // Tambah User
+    $(document).off('click', '#btnAddUser').on('click', '#btnAddUser', function () {
+      console.log('Tambah user diklik');
+      $('#userForm')[0].reset();
+      $('#usr_id').val('');
+      $('#form_action').val('create');
+      $('#modalTitle').text('Tambah User');
+      $('#passwordField').show();
+      $('#password').attr('required', true);
+      userModal.modal('show');
+    });
+
+    // Edit User
+    $(document).off('click', '.btnEditUser').on('click', '.btnEditUser', function () {
+      const id = $(this).data('id');
+      console.log('Edit user ID:', id);
+
+      fetch(`controller/user/pro_master_user.php?action=get&id=${id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || !data.usr_id) {
+            alert('Data user tidak ditemukan');
+            return;
+          }
+
+          $('#usr_id').val(data.usr_id);
+          $('#username').val(data.usr_username);
+          $('#nama').val(data.usr_nama);
+          $('#email').val(data.usr_email);
+          $('#status').val(data.usr_status);
+          $('#vendor_id').val(data.vendor_id || '');
+          $('#form_action').val('edit');
+          $('#modalTitle').text('Edit User');
+          $('#passwordField').hide();
+          $('#password').removeAttr('required');
+
+          userModal.modal('show');
+        })
+        .catch(err => {
+          console.error('Gagal ambil data user:', err);
+          alert('Gagal mengambil data user.');
+        });
+    });
+
+    // Simpan Tambah/Edit
+    $(document).off('submit', '#userForm').on('submit', '#userForm', function (e) {
+      e.preventDefault();
+      const formData = $(this).serialize();
+
+      $.ajax({
+        url: 'controller/user/pro_master_user.php',
+        method: 'POST',
+        data: formData,
+        success: function (res) {
+          console.log('Response:', res);
+          if (res.trim() === 'OK') {
+            alert('Data user berhasil disimpan!');
+            userModal.modal('hide');
+            location.reload();
+          } else {
+            alert('Gagal menyimpan: ' + res);
+          }
+        },
+        error: function (xhr, status, err) {
+          alert('Terjadi kesalahan: ' + err);
+        }
+      });
+    });
+
+    // Delete User
+    $(document).off('click', '.btnDeleteUser').on('click', '.btnDeleteUser', function () {
+      const id = $(this).data('id');
+      if (confirm('Yakin ingin menghapus user ini?')) {
+        window.location.href = `controller/user/pro_master_user.php?action=delete&id=${id}`;
+      }
+    });
+
+    // Reset Password
+    $(document).off('click', '.btnResetPass').on('click', '.btnResetPass', function () {
+      const id = $(this).data('id');
+      console.log('Reset password ID:', id);
+      $('#reset_usr_id').val(id);
+      $('#new_pass, #confirm_pass').val('');
+      resetModal.modal('show');
+    });
+
+    // Simpan Reset Password
+    $(document).off('submit', '#resetPassForm').on('submit', '#resetPassForm', function (e) {
+      e.preventDefault();
+      const newPass = $('#new_pass').val();
+      const confirmPass = $('#confirm_pass').val();
+
+      if (newPass.length < 6) return alert('Password minimal 6 karakter!');
+      if (newPass !== confirmPass) return alert('Konfirmasi password tidak cocok!');
+
+      $.ajax({
+        url: 'controller/user/pro_master_user.php',
+        method: 'POST',
+        data: {
+          action: 'reset_password',
+          usr_id: $('#reset_usr_id').val(),
+          new_pass: newPass
+        },
+        success: function (res) {
+          if (res.trim() === 'OK') {
+            alert('Password berhasil direset!');
+            resetModal.modal('hide');
+          } else {
+            alert('Gagal reset password: ' + res);
+          }
+        },
+        error: function (xhr, status, err) {
+          alert('Terjadi kesalahan: ' + err);
+        }
+      });
+    });
+
+  }, 300); 
 </script>

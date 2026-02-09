@@ -2,7 +2,6 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-// $db = "pt_world_trans";
 $db   = 'bintangbiruteknik';
 
 $conn = new mysqli($host, $user, $pass, $db);
