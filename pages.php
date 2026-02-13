@@ -32,7 +32,11 @@ switch ($cs) {
     break;
 
   case 'History':
-    include_once(__DIR__ . '/view/history.php');
+    if (in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
+      include_once(__DIR__ . '/view/history.php');
+    } else {
+      include_once(__DIR__ . '/view/history_customer.php');
+    }
     break;
 
   case 'Service':

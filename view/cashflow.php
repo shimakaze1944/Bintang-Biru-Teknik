@@ -29,13 +29,15 @@ $rows = [];
 
 if ($q) {
   while ($row = $q->fetch_assoc()) {
-    if ($row['tipe'] === 'Kredit') $total_kredit += $row['total'];
-    else $total_debit += $row['total'];
+    if ($row['tipe'] === 'Kredit')
+      $total_kredit += $row['total'];
+    else
+      $total_debit += $row['total'];
     $rows[] = $row;
   }
 }
 
-$saldo = $total_kredit - $total_debit;
+$saldo = $total_debit - $total_kredit;
 ?>
 
 <div class="container-fluid px-4 mt-4">
@@ -50,7 +52,8 @@ $saldo = $total_kredit - $total_debit;
     <input type="hidden" name="cs" value="Cashflow">
     <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
       <label class="me-2">Pilih Bulan:</label>
-      <input type="month" name="bulan" value="<?= htmlspecialchars($bulan) ?>" class="form-control" style="width:180px;">
+      <input type="month" name="bulan" value="<?= htmlspecialchars($bulan) ?>" class="form-control"
+        style="width:180px;">
       <button type="submit" class="btn btn-secondary ms-2">Tampilkan</button>
     </div>
   </form>
@@ -73,12 +76,14 @@ $saldo = $total_kredit - $total_debit;
             <?php if (!empty($rows)): ?>
               <?php foreach ($rows as $r): ?>
                 <tr>
-                  <td><?= htmlspecialchars($r['tanggal']) ?></td>
                   <td>
-                    <?php if ($r['tipe'] === 'Kredit'): ?>
-                      <span class="badge">Kredit</span>
-                    <?php else: ?>
+                    <?= $r['tanggal'] ? date('d/m/Y', strtotime($r['tanggal'])) : '-' ?>
+                  </td>
+                  <td>
+                    <?php if ($r['tipe'] === 'Debit'): ?>
                       <span class="badge">Debit</span>
+                    <?php else: ?>
+                      <span class="badge">Kredit</span>
                     <?php endif; ?>
                   </td>
                   <td class="text-end"><?= number_format($r['total'], 0, ',', '.') ?></td>
@@ -95,7 +100,9 @@ $saldo = $total_kredit - $total_debit;
                 </tr>
               <?php endforeach; ?>
             <?php else: ?>
-              <tr><td colspan="6" class="text-muted">Belum ada transaksi bulan ini.</td></tr>
+              <tr>
+                <td colspan="6" class="text-muted">Belum ada transaksi bulan ini.</td>
+              </tr>
             <?php endif; ?>
           </tbody>
         </table>
@@ -130,9 +137,9 @@ $saldo = $total_kredit - $total_debit;
           </div>
 
           <div class="mb-3">
-            <label>Tipe Transaksi</label><br>
-            <label><input type="radio" name="tipe" value="Kredit" required> Kredit (Masuk)</label>
-            <label class="ms-3"><input type="radio" name="tipe" value="Debit"> Debit (Keluar)</label>
+            <label>Tipe Transaksi</label><br><label><input type="radio" name="tipe" value="Debit" required> Debit
+              (Masuk)</label>
+            <label class="ms-3"><input type="radio" name="tipe" value="Kredit"> Kredit (Keluar)</label>
           </div>
 
           <div class="mb-3">
@@ -159,86 +166,87 @@ $saldo = $total_kredit - $total_debit;
   .table td {
     vertical-align: middle !important;
   }
+
   .table td.text-start {
     text-align: left !important;
   }
+
   .badge {
     font-size: 0.9rem;
   }
 </style>
 
 <script>
-document.addEventListener("DOMContentLoaded", function(){
-  if (typeof window.jQuery === "undefined") {
-    console.warn("jQuery belum termuat, memuat ulang dari CDN...");
-    const script = document.createElement("script");
-    script.src = "https://code.jquery.com/jquery-3.7.1.min.js";
-    script.onload = initCashflow;
-    document.body.appendChild(script);
-  } else {
-    initCashflow();
-  }
+  document.addEventListener("DOMContentLoaded", function () {
+    if (typeof window.jQuery === "undefined") {
+      console.warn("jQuery belum termuat, memuat ulang dari CDN...");
+      const script = document.createElement("script");
+      script.src = "https://code.jquery.com/jquery-3.7.1.min.js";
+      script.onload = initCashflow;
+      document.body.appendChild(script);
+    } else {
+      initCashflow();
+    }
 
-  function initCashflow(){
-    console.log("jQuery aktif, Cashflow initialized");
+    function initCashflow() {
+      console.log("jQuery aktif, Cashflow initialized");
 
-    const modal = $('#modalCashflow');
+      const modal = $('#modalCashflow');
 
-    // tambah
-    $('#btnAdd').on('click', function(){
-      console.log("Tombol Tambah diklik");
-      $('#formCashflow')[0].reset();
-      $('#action').val('create');
-      $('#modalTitle').text('Tambah Transaksi');
-      modal.modal('show');
-    });
-
-    // edit
-    $(document).on('click', '.btnEdit', function(){
-      const id = $(this).data('id');
-      fetch(`controller/master/cashflow_controller.php?action=get&id=${id}`)
-        .then(r=>r.json())
-        .then(d=>{
-          $('#id').val(d.id);
-          $('#tanggal').val(d.tanggal);
-          $(`input[name="tipe"][value="${d.tipe}"]`).prop('checked', true);
-          $('#total').val(d.total);
-          $('#keterangan').val(d.keterangan);
-          $('#action').val('edit');
-          $('#modalTitle').text('Edit Transaksi');
-          modal.modal('show');
-        });
-    });
-
-    // simpan
-    $('#formCashflow').on('submit', function(e){
-      e.preventDefault();
-      $.post('controller/master/cashflow_controller.php', $(this).serialize(), function(res){
-        if(res.trim()==='OK'){
-          alert('Data berhasil disimpan!');
-          modal.modal('hide');
-          location.reload();
-        } else {
-          alert('Gagal menyimpan: ' + res);
-        }
+      // tambah
+      $('#btnAdd').on('click', function () {
+        console.log("Tombol Tambah diklik");
+        $('#formCashflow')[0].reset();
+        $('#action').val('create');
+        $('#modalTitle').text('Tambah Transaksi');
+        modal.modal('show');
       });
-    });
 
-    // hapus
-    $(document).on('click', '.btnDelete', function(){
-      const id = $(this).data('id');
-      if(confirm('Yakin ingin menghapus transaksi ini?')){
-        $.get(`controller/master/cashflow_controller.php?action=delete&id=${id}`, function(res){
-          if(res.trim()==='OK'){
-            alert('Data berhasil dihapus!');
+      // edit
+      $(document).on('click', '.btnEdit', function () {
+        const id = $(this).data('id');
+        fetch(`controller/master/cashflow_controller.php?action=get&id=${id}`)
+          .then(r => r.json())
+          .then(d => {
+            $('#id').val(d.id);
+            $('#tanggal').val(d.tanggal);
+            $(`input[name="tipe"][value="${d.tipe}"]`).prop('checked', true);
+            $('#total').val(d.total);
+            $('#keterangan').val(d.keterangan);
+            $('#action').val('edit');
+            $('#modalTitle').text('Edit Transaksi');
+            modal.modal('show');
+          });
+      });
+
+      // simpan
+      $('#formCashflow').on('submit', function (e) {
+        e.preventDefault();
+        $.post('controller/master/cashflow_controller.php', $(this).serialize(), function (res) {
+          if (res.trim() === 'OK') {
+            alert('Data berhasil disimpan!');
+            modal.modal('hide');
             location.reload();
           } else {
-            alert('Gagal menghapus: '+res);
+            alert('Gagal menyimpan: ' + res);
           }
         });
-      }
-    });
-  }
-});
-</script>
+      });
 
+      // hapus
+      $(document).on('click', '.btnDelete', function () {
+        const id = $(this).data('id');
+        if (confirm('Yakin ingin menghapus transaksi ini?')) {
+          $.get(`controller/master/cashflow_controller.php?action=delete&id=${id}`, function (res) {
+            if (res.trim() === 'OK') {
+              alert('Data berhasil dihapus!');
+              location.reload();
+            } else {
+              alert('Gagal menghapus: ' + res);
+            }
+          });
+        }
+      });
+    }
+  });
+</script>
