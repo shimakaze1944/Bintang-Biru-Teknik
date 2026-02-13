@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Feb 10, 2026 at 12:13 AM
+-- Generation Time: Feb 13, 2026 at 02:07 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -44,8 +44,7 @@ CREATE TABLE `tbl_cashflow` (
 INSERT INTO `tbl_cashflow` (`id`, `tanggal`, `tipe`, `total`, `keterangan`, `created_by`, `created_at`) VALUES
 (1, '2026-01-13', 'Kredit', 25000.00, '', 'Andi', '2026-02-09 21:15:57'),
 (2, '2026-01-19', 'Debit', 10000.00, '', 'Andi', '2026-02-09 21:16:19'),
-(3, '2026-02-10', 'Kredit', 123450.00, '', 'test123', '2026-02-09 22:57:12'),
-(4, '2026-02-04', 'Debit', 5000000.00, '', 'test123', '2026-02-09 23:01:12');
+(3, '2026-02-10', 'Kredit', 123450.00, 'ini keterangan', 'test123', '2026-02-09 22:57:12');
 
 -- --------------------------------------------------------
 
@@ -214,7 +213,7 @@ INSERT INTO `tbl_user` (`usr_id`, `usr_nama`, `usr_email`, `usr_username`, `usr_
 (4, 'YP', 'yp@customer.com', 'yp', '$2y$12$6Su36FquPl5hVGGw15gb4ecPBx.wN8KbpNLt/eYBGRHS2iPH/2R2C', NULL, NULL, 'Customer', 2, '2026-01-28 16:21:33'),
 (5, 'CongHan', 'conghan@customer.com', 'conghan', '$2y$12$6Su36FquPl5hVGGw15gb4ecPBx.wN8KbpNLt/eYBGRHS2iPH/2R2C', NULL, NULL, 'Customer', 3, '2026-01-28 16:21:33'),
 (7, 'test1', 'test@crud.com', 'crudtest1', '$2y$10$fqpY9c9vHYoITE.dpO2mOOgQhEvTLM92sf1oeenkQZvpvLrdv2.8W', NULL, NULL, 'BBTeknik', 1, '2026-02-07 17:43:47'),
-(8, 'test123', 'test@mail.com', 'test1', '$2y$10$iFCrBOWQGOYbEwU.QWT/2.3b7XRwZ8O8QO3odfBN2fQx.FFTgzKtW', 'test12341', '1231421312', 'BBTeknik', 1, '2026-02-07 19:15:20');
+(8, 'test123', 'test@mail.com', 'test1', '$2y$10$x6tj5V0SJMjAux2Bhj2SveLGcYn8QMpL5wZXKW7ERT4OIIJZxfLea', 'test12341', '1231421312', 'BBTeknik', 1, '2026-02-07 19:15:20');
 
 -- --------------------------------------------------------
 

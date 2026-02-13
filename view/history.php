@@ -9,16 +9,34 @@ include_once(__DIR__ . '/../controller/auth/db_connection.php');
 
 // Ambil filter tanggal
 $from = $_GET['from'] ?? '';
-$to   = $_GET['to'] ?? '';
+$to = $_GET['to'] ?? '';
 
 $where = '';
 if ($from && $to) {
-  $where = "WHERE DATE(s.tgl_masuk) BETWEEN '$from' AND '$to'";
+  $where = "
+    WHERE (
+      (DATE(s.tgl_masuk) BETWEEN '$from' AND '$to')
+      OR (DATE(s.tgl_keluar) BETWEEN '$from' AND '$to')
+      OR ('$from' BETWEEN DATE(s.tgl_masuk) AND DATE(IFNULL(s.tgl_keluar, NOW())))
+      OR ('$to' BETWEEN DATE(s.tgl_masuk) AND DATE(IFNULL(s.tgl_keluar, NOW())))
+    )
+  ";
 } elseif ($from) {
-  $where = "WHERE DATE(s.tgl_masuk) >= '$from'";
+  $where = "
+    WHERE (
+      DATE(s.tgl_masuk) >= '$from'
+      OR DATE(s.tgl_keluar) >= '$from'
+    )
+  ";
 } elseif ($to) {
-  $where = "WHERE DATE(s.tgl_masuk) <= '$to'";
+  $where = "
+    WHERE (
+      DATE(s.tgl_masuk) <= '$to'
+      OR DATE(s.tgl_keluar) <= '$to'
+    )
+  ";
 }
+
 
 // Query utama: ambil semua servis lengkap
 $q = $conn->query("
@@ -75,8 +93,8 @@ $q = $conn->query("
   } elseif ($q->num_rows > 0) {
     echo '<ul class="list-group">';
     while ($row = $q->fetch_assoc()) {
-      $tglMasuk = $row['tgl_masuk'] ? date('Y-m-d', strtotime($row['tgl_masuk'])) : '-';
-      $tglKeluar = $row['tgl_keluar'] ? date('Y-m-d', strtotime($row['tgl_keluar'])) : '-';
+      $tglMasuk = $row['tgl_masuk'] ? date('d-m-Y', strtotime($row['tgl_masuk'])) : '-';
+      $tglKeluar = $row['tgl_keluar'] ? date('d-m-Y', strtotime($row['tgl_keluar'])) : '-';
       $layanan = $row['layanan'] ?: '-';
       $teknisi = $row['teknisi'] ?: '-';
       $keterangan = $row['keterangan'] ?: '-';
@@ -89,7 +107,7 @@ $q = $conn->query("
         default => 'dark'
       };
 
-      echo '<li class="list-group-item shadow-sm mb-2">';
+      echo '<li class="list-group-item shadow-sm mb-4">';
       echo '<div class="d-flex justify-content-between align-items-start">';
       echo '<div class="me-3">';
       echo '<div><strong>' . htmlspecialchars($row['no_wo']) . '</strong> — ' . htmlspecialchars($row['nama_kapal']) . '</div>';

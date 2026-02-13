@@ -12,7 +12,7 @@
 <body>
   <div class="wrapper">
     <div class="container">
-      <h1>PT. Bintang Biru Teknik<br><small>Login</small></h1>
+      <h1 style="margin-bottom: 3rem; color: black;">PT. Bintang Biru Teknik<br></h1>
 
       <form id="login-form" method="post">
         <div class="form-group">

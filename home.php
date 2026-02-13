@@ -85,6 +85,31 @@ $isAdmin = in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik']);
       color: #fff;
     }
 
+    .navbar-sidenav .dropdown-menu {
+      position: absolute;
+      margin-left: 5px;
+      border-radius: 8px;
+      background-color: #173863;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      min-width: 180px;
+    }
+
+    .navbar-sidenav .dropdown-menu .dropdown-item {
+      color: #fff !important;
+      font-size: 14px;
+      padding: 8px 14px;
+      border-radius: 6px;
+    }
+
+    .navbar-sidenav .dropdown-menu .dropdown-item:hover {
+      background-color: #0B97A4 !important;
+    }
+
+    .navbar-sidenav .dropdown-toggle::after {
+      margin-top: 7px;
+    }
+
     .content-wrapper {
       background: #fff;
       padding: 100px 20px 20px 20px;
@@ -143,20 +168,22 @@ $isAdmin = in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik']);
             </a>
           </li>
 
-          <li class="nav-item">
-            <a class="nav-link collapsed" href="#collapseMaster" data-toggle="collapse">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" role="button" data-toggle="dropdown"
+              aria-expanded="false">
               <i class="fa fa-fw fa-database"></i> Master Data
             </a>
-            <ul class="sidenav-second-level collapse" id="collapseMaster">
+            <ul class="dropdown-menu dropdown-menu-dark border-0 shadow" aria-labelledby="masterDropdown">
               <?php if ($_SESSION['sess_usr_status'] === 'Admin'): ?>
-                <li><a href="?cs=Master-User"><i class="fa fa-user"></i> User</a></li>
+                <li><a class="dropdown-item" href="?cs=Master-User"><i class="fa fa-user me-2"></i> User</a></li>
               <?php endif; ?>
-              <li><a href="?cs=Master-Kapal"><i class="fa fa-ship"></i> Kapal</a></li>
-              <li><a href="?cs=Master-Pekerja"><i class="fa fa-building"></i> Teknisi</a></li>
-              <li><a href="?cs=Master-Layanan"><i class="fa fa-wrench"></i> Layanan</a></li>
-              <li><a href="?cs=Master-Vendor"><i class="fa fa-industry"></i> Vendor</a></li>
+              <li><a class="dropdown-item" href="?cs=Master-Kapal"><i class="fa fa-ship me-2"></i> Kapal</a></li>
+              <li><a class="dropdown-item" href="?cs=Master-Pekerja"><i class="fa fa-building me-2"></i> Teknisi</a></li>
+              <li><a class="dropdown-item" href="?cs=Master-Layanan"><i class="fa fa-wrench me-2"></i> Layanan</a></li>
+              <li><a class="dropdown-item" href="?cs=Master-Vendor"><i class="fa fa-industry me-2"></i> Vendor</a></li>
             </ul>
           </li>
+
 
 
           <li class="nav-item">

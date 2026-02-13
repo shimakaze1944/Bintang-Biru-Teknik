@@ -77,31 +77,58 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
   <!-- CARD ATAS -->
   <div class="row mt-4 gx-4">
 
-    <!-- Card 1: Servis Selesai Bulan Ini -->
+    <!-- Card 1: Pemasukan Bulan Ini -->
     <div class="col-md-4 mb-4">
-      <div class="card text-white h-100 shadow-sm border-0" style="background-color: darkblue">
+      <?php
+      $q3 = $conn->query("
+        SELECT 
+          SUM(CASE WHEN tipe='Debit' THEN total ELSE 0 END) AS total_debit
+        FROM tbl_cashflow
+        WHERE MONTH(tanggal)=MONTH(NOW()) 
+          AND YEAR(tanggal)=YEAR(NOW())
+      ");
+      $rowCash = $q3 ? $q3->fetch_assoc() : ['total_debit' => 0];
+      $total_debit = $rowCash['total_debit'] ?? 0;
+
+      ?>
+      <div class="card text-white h-100 shadow-sm border-0" style="background-color: darkgreen;">
         <div class="card-body">
-          <h5 class="card-title">Servis Selesai Bulan Ini</h5>
-          <?php
-          $q1 = $conn->query("
-            SELECT COUNT(*) AS total 
-            FROM tbl_servis 
-            WHERE status = 'Done'
-              AND MONTH(tgl_keluar) = MONTH(CURDATE())
-              AND YEAR(tgl_keluar) = YEAR(CURDATE())
-          ");
-          $totalDone = $q1 ? $q1->fetch_assoc()['total'] : 0;
-          ?>
-          <h2 class="fw-bold mb-0"><?php echo $totalDone; ?></h2>
+          <h5 class="card-title">Pemasukan Bulan Ini</h5>
+          <h5 class="mb-0"> Rp
+            <?= number_format($total_debit, 0, ',', '.') ?>
+          </h5>
         </div>
-        <a href="?cs=Service" class="card-footer text-white text-center border-0">Lihat Servis</a>
+        <a href="?cs=Cashflow" class="card-footer text-white text-center border-0">Lihat Cashflow</a>
       </div>
     </div>
 
-
-    <!-- Card 2: Servis Bulan Ini -->
+    <!-- Card 2: Pengeluaran Bulan Ini -->
     <div class="col-md-4 mb-4">
-      <div class="card text-white h-100 shadow-sm border-0" style="background-color: purple">
+      <?php
+      $q3 = $conn->query("
+        SELECT 
+          SUM(CASE WHEN tipe='Kredit' THEN total ELSE 0 END) AS total_kredit
+        FROM tbl_cashflow
+        WHERE MONTH(tanggal)=MONTH(NOW()) 
+          AND YEAR(tanggal)=YEAR(NOW())
+      ");
+      $rowCash = $q3 ? $q3->fetch_assoc() : ['total_kredit' => 0];
+      $total_kredit = $rowCash['total_kredit'] ?? 0;
+      ?>
+      <div class="card text-white h-100 shadow-sm border-0" style="background-color: firebrick;">
+        <div class="card-body pb-5">
+          <h5 class="card-title">Pengeluaran Bulan Ini</h5>
+          <h5 class="mb-0"> Rp
+            <?= number_format($total_kredit, 0, ',', '.') ?>
+          </h5>
+        </div>
+        <a href="?cs=Cashflow" class="card-footer text-white text-center border-0">Lihat Cashflow</a>
+      </div>
+    </div>
+
+    <!-- Card 3: Servis Bulan Ini -->
+    <div class="col-md-4 mb-4">
+      <div class="card text-white h-100 shadow-sm border-0" style="background-color: darkblue">
         <div class="card-body">
           <h5 class="card-title">🛠 Servis Bulan Ini</h5>
           <?php
@@ -115,41 +142,6 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
           <h2><?php echo $totalServis; ?></h2>
         </div>
         <a href="?cs=Service" class="card-footer text-white text-center border-0">Lihat Servis</a>
-      </div>
-    </div>
-
-    <!-- Card 3: Cashflow Bulan Ini -->
-    <div class="col-md-4 mb-4">
-      <?php
-      $q3 = $conn->query("
-        SELECT 
-          SUM(CASE WHEN tipe='Kredit' THEN total ELSE 0 END) AS total_kredit,
-          SUM(CASE WHEN tipe='Debit' THEN total ELSE 0 END) AS total_debit
-        FROM tbl_cashflow
-        WHERE MONTH(tanggal)=MONTH(NOW()) 
-          AND YEAR(tanggal)=YEAR(NOW())
-      ");
-      $rowCash = $q3 ? $q3->fetch_assoc() : ['total_kredit' => 0, 'total_debit' => 0];
-      $total_kredit = $rowCash['total_kredit'] ?? 0;
-      $total_debit = $rowCash['total_debit'] ?? 0;
-      $saldo = $total_kredit - $total_debit;
-
-      if ($saldo > 0) {
-        $bgColor = 'darkgreen'; // positif
-      } elseif ($saldo < 0) {
-        $bgColor = 'firebrick'; // negatif
-      } else {
-        $bgColor = '#6c757d'; // netral
-      }
-      ?>
-      <div class="card text-white h-100 shadow-sm border-0" style="background-color: <?= $bgColor ?>;">
-        <div class="card-body">
-          <h5 class="card-title">💰 Cashflow Bulan Ini</h5>
-          <p class="mb-0">Kredit: Rp <?= number_format($total_kredit, 0, ',', '.') ?></p>
-          <p class="mb-0">Debit: Rp <?= number_format($total_debit, 0, ',', '.') ?></p>
-          <h4 class="mt-2"><strong>Saldo: Rp <?= number_format($saldo, 0, ',', '.') ?></strong></h4>
-        </div>
-        <a href="?cs=Cashflow" class="card-footer text-white text-center border-0">Lihat Cashflow</a>
       </div>
     </div>
   </div>
