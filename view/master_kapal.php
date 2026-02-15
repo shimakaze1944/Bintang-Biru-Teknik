@@ -157,7 +157,7 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
         });
     });
 
-    // Simpan via AJAX
+    // Simpan
     $(document).on('submit', '#kapalForm', function (e) {
       e.preventDefault();
       $.ajax({

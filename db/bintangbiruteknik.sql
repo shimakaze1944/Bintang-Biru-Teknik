@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Feb 13, 2026 at 02:07 PM
+-- Generation Time: Feb 15, 2026 at 08:37 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -76,6 +76,7 @@ INSERT INTO `tbl_kapal` (`kapal_id`, `nama_kapal`, `vendor_id`, `keterangan`) VA
 
 CREATE TABLE `tbl_layanan` (
   `layanan_id` int(11) NOT NULL,
+  `layanan_kode` varchar(50) NOT NULL,
   `layanan_nama` varchar(100) NOT NULL,
   `layanan_harga` decimal(15,2) DEFAULT 0.00,
   `layanan_keterangan` text DEFAULT NULL
@@ -85,11 +86,11 @@ CREATE TABLE `tbl_layanan` (
 -- Dumping data for table `tbl_layanan`
 --
 
-INSERT INTO `tbl_layanan` (`layanan_id`, `layanan_nama`, `layanan_harga`, `layanan_keterangan`) VALUES
-(1, 'Docking', 0.00, NULL),
-(2, 'Perbaikan Mesin', 0.00, NULL),
-(3, 'Cat Kapal', 0.00, NULL),
-(4, 'Ganti Balok', 0.00, NULL);
+INSERT INTO `tbl_layanan` (`layanan_id`, `layanan_kode`, `layanan_nama`, `layanan_harga`, `layanan_keterangan`) VALUES
+(1, '', 'Docking', 100000.00, 'ini ket'),
+(2, '', 'Perbaikan Mesin', 100000.00, 'ini ket'),
+(3, '', 'Cat Kapal', 10000.00, 'ini ket'),
+(4, '', 'Ganti Balok', 10000.00, 'ini ket');
 
 -- --------------------------------------------------------
 
@@ -129,16 +130,17 @@ CREATE TABLE `tbl_servis` (
   `tgl_keluar` date DEFAULT NULL,
   `status` enum('On Progress','On Hold','Done','Canceled') DEFAULT 'On Progress',
   `keterangan` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `total_harga` decimal(15,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tbl_servis`
 --
 
-INSERT INTO `tbl_servis` (`svs_id`, `no_wo`, `nama_kapal`, `vendor_id`, `tgl_masuk`, `tgl_keluar`, `status`, `keterangan`, `created_at`) VALUES
-(1, '12poijhubjas', 'efg', 6, '2026-02-04', '2026-05-14', 'On Progress', 'test crud servis', '2026-02-08 22:16:43'),
-(2, '9128u37y6t1', 'crudtest1', 3, '2025-11-05', '2026-02-19', 'Done', ';koaijcuhb@(*&hbjnqkax', '2026-02-09 15:28:05');
+INSERT INTO `tbl_servis` (`svs_id`, `no_wo`, `nama_kapal`, `vendor_id`, `tgl_masuk`, `tgl_keluar`, `status`, `keterangan`, `created_at`, `total_harga`) VALUES
+(1, '12poijhubjas', 'efg', 6, '2026-02-04', '2026-05-14', 'On Progress', 'test crud servis', '2026-02-08 22:16:43', 220.00),
+(2, '9128u37y6t1', 'crudtest1', 3, '2025-11-05', '2026-02-19', 'Done', ';koaijcuhb@(*&hbjnqkax', '2026-02-09 15:28:05', 0.00);
 
 -- --------------------------------------------------------
 
@@ -156,7 +158,9 @@ CREATE TABLE `tbl_servis_layanan` (
 --
 
 INSERT INTO `tbl_servis_layanan` (`svs_id`, `layanan_id`) VALUES
+(1, 1),
 (1, 2),
+(1, 3),
 (1, 4),
 (2, 1),
 (2, 3),
@@ -212,8 +216,9 @@ INSERT INTO `tbl_user` (`usr_id`, `usr_nama`, `usr_email`, `usr_username`, `usr_
 (3, 'HM', 'hm@customer.com', 'hm', '$2y$12$6Su36FquPl5hVGGw15gb4ecPBx.wN8KbpNLt/eYBGRHS2iPH/2R2C', NULL, NULL, 'Customer', 7, '2026-01-28 16:21:33'),
 (4, 'YP', 'yp@customer.com', 'yp', '$2y$12$6Su36FquPl5hVGGw15gb4ecPBx.wN8KbpNLt/eYBGRHS2iPH/2R2C', NULL, NULL, 'Customer', 2, '2026-01-28 16:21:33'),
 (5, 'CongHan', 'conghan@customer.com', 'conghan', '$2y$12$6Su36FquPl5hVGGw15gb4ecPBx.wN8KbpNLt/eYBGRHS2iPH/2R2C', NULL, NULL, 'Customer', 3, '2026-01-28 16:21:33'),
-(7, 'test1', 'test@crud.com', 'crudtest1', '$2y$10$fqpY9c9vHYoITE.dpO2mOOgQhEvTLM92sf1oeenkQZvpvLrdv2.8W', NULL, NULL, 'BBTeknik', 1, '2026-02-07 17:43:47'),
-(8, 'test123', 'test@mail.com', 'test1', '$2y$10$x6tj5V0SJMjAux2Bhj2SveLGcYn8QMpL5wZXKW7ERT4OIIJZxfLea', 'test12341', '1231421312', 'BBTeknik', 1, '2026-02-07 19:15:20');
+(9, 'A Lo', 'alo@customer.com', 'ALo', '$2y$10$6rjdA8Xderqy1wJfW5YTkeDP9qzYMs3I3FWULucczM54MxGbUO64q', NULL, NULL, 'Customer', 4, '2026-02-13 20:02:33'),
+(10, 'Hartono', 'Hartono@customer.com', 'Hartono', '$2y$10$FPX5RMymP3.ssLlQnuLkLODZlQ5jtH19.CGSdKulqfPocaERAvsma', NULL, NULL, 'Customer', 5, '2026-02-13 20:06:46'),
+(11, 'CV Baruna Jaya', 'barunajaya@customer.com', 'BarunaJaya', '$2y$10$XutnUFCA3CFSF4bWyuZbje4G35hA.esZr/glXGEoRellg9m8whndi', NULL, NULL, 'Customer', 6, '2026-02-13 20:07:57');
 
 -- --------------------------------------------------------
 
@@ -346,7 +351,7 @@ ALTER TABLE `tbl_servis`
 -- AUTO_INCREMENT for table `tbl_user`
 --
 ALTER TABLE `tbl_user`
-  MODIFY `usr_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `usr_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `tbl_vendor`

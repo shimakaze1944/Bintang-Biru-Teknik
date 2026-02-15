@@ -13,7 +13,6 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
         </div>";
   exit;
 }
-
 ?>
 
 <div class="container-fluid px-4 mt-4">
@@ -34,6 +33,7 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
               <th>Username</th>
               <th>Nama Lengkap</th>
               <th>Email</th>
+              <th>No. HP</th>
               <th>Vendor</th>
               <th>Status</th>
               <th>Aksi</th>
@@ -54,6 +54,7 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
                         <td>{$row['usr_username']}</td>
                         <td>{$row['usr_nama']}</td>
                         <td>{$row['usr_email']}</td>
+                        <td>{$row['usr_tlp']}</td>
                         <td>" . ($row['vendor_name'] ?? '-') . "</td>
                         <td class='text-center'>
                           <span style='color:white; padding:5px;' class='badge bg-" . (
@@ -76,7 +77,7 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
                 $no++;
               }
             } else {
-              echo "<tr><td colspan='7' class='text-center text-muted'>Belum ada user terdaftar</td></tr>";
+              echo "<tr><td colspan='8' class='text-center text-muted'>Belum ada user terdaftar</td></tr>";
             }
             ?>
           </tbody>
@@ -91,8 +92,7 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="userModalLabel"><i class="fa fa-user-plus me-2"></i><span id="modalTitle">Tambah
-            User</span></h5>
+        <h5 class="modal-title" id="userModalLabel"><i class="fa fa-user-plus me-2"></i><span id="modalTitle">Tambah User</span></h5>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -103,28 +103,46 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
           <input type="hidden" name="usr_id" id="usr_id">
           <input type="hidden" name="action" id="form_action" value="create">
 
+          <!-- Username -->
           <div class="mb-3">
-            <label class="form-label">Username</label>
-            <input type="text" name="usr_username" id="username" class="form-control" required>
+            <label class="form-label">Username <span class="text-danger">*</span></label>
+            <input type="text" name="usr_username" id="username" class="form-control" required placeholder="Tanpa spasi">
           </div>
 
+          <!-- Nama -->
           <div class="mb-3">
-            <label class="form-label">Nama Lengkap</label>
+            <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
             <input type="text" name="usr_nama" id="nama" class="form-control" required>
           </div>
 
+          <!-- Email -->
           <div class="mb-3">
             <label class="form-label">Email</label>
-            <input type="email" name="usr_email" id="email" class="form-control" required>
+            <input type="email" name="usr_email" id="email" class="form-control" placeholder="Masukkan email (opsional)">
           </div>
 
-          <div class="mb-3" id="passwordField">
-            <label class="form-label">Password</label>
-            <input type="password" name="usr_pass" id="password" class="form-control" required>
-          </div>
-
+          <!-- No. HP -->
           <div class="mb-3">
-            <label class="form-label">Status</label>
+            <label class="form-label">No. HP</label>
+            <input type="text" name="usr_tlp" id="nohp" class="form-control" placeholder="Masukkan nomor HP">
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3 position-relative" id="passwordField">
+            <label class="form-label">Password <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="password" name="usr_pass" id="password" class="form-control" required>
+              <div class="input-group-append">
+                <span class="input-group-text bg-white border-start-0" id="togglePassword" style="cursor:pointer;">
+                  <i class="fa fa-eye-slash" id="eyeIcon"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="mb-3">
+            <label class="form-label">Status <span class="text-danger">*</span></label>
             <select name="usr_status" id="status" class="form-control" required>
               <option value="" disabled selected>Pilih Status</option>
               <option value="Admin">Admin</option>
@@ -133,6 +151,7 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
             </select>
           </div>
 
+          <!-- Vendor -->
           <div class="mb-3">
             <label class="form-label">Vendor</label>
             <select name="vendor_id" id="vendor_id" class="form-control">
@@ -173,14 +192,12 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
 
           <div class="form-group mb-3">
             <label>Password Baru</label>
-            <input type="text" name="new_pass" id="new_pass" class="form-control" required minlength="6"
-              placeholder="Masukkan password baru">
+            <input type="text" name="new_pass" id="new_pass" class="form-control" required minlength="6" placeholder="Masukkan password baru">
           </div>
 
           <div class="form-group mb-3">
             <label>Konfirmasi Password Baru</label>
-            <input type="text" name="confirm_pass" id="confirm_pass" class="form-control" required minlength="6"
-              placeholder="Ulangi password baru">
+            <input type="text" name="confirm_pass" id="confirm_pass" class="form-control" required minlength="6" placeholder="Ulangi password baru">
           </div>
         </div>
 
@@ -193,11 +210,8 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
   </div>
 </div>
 
-
 <script>
   setTimeout(function () {
-    console.log('Binding ulang semua event...');
-
     const userModal = $('#userModal');
     const resetModal = $('#resetPassModal');
 
@@ -206,10 +220,8 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
       $('#new_pass').trigger('focus');
     });
 
-
     // Tambah User
     $(document).off('click', '#btnAddUser').on('click', '#btnAddUser', function () {
-      console.log('Tambah user diklik');
       $('#userForm')[0].reset();
       $('#usr_id').val('');
       $('#form_action').val('create');
@@ -222,8 +234,6 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
     // Edit User
     $(document).off('click', '.btnEditUser').on('click', '.btnEditUser', function () {
       const id = $(this).data('id');
-      console.log('Edit user ID:', id);
-
       fetch(`controller/user/pro_master_user.php?action=get&id=${id}`)
         .then(res => res.json())
         .then(data => {
@@ -236,6 +246,7 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
           $('#username').val(data.usr_username);
           $('#nama').val(data.usr_nama);
           $('#email').val(data.usr_email);
+          $('#nohp').val(data.usr_tlp);
           $('#status').val(data.usr_status);
           $('#vendor_id').val(data.vendor_id || '');
           $('#form_action').val('edit');
@@ -245,10 +256,7 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
 
           userModal.modal('show');
         })
-        .catch(err => {
-          console.error('Gagal ambil data user:', err);
-          alert('Gagal mengambil data user.');
-        });
+        .catch(() => alert('Gagal mengambil data user.'));
     });
 
     // Simpan Tambah/Edit
@@ -261,7 +269,6 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
         method: 'POST',
         data: formData,
         success: function (res) {
-          console.log('Response:', res);
           if (res.trim() === 'OK') {
             alert('Data user berhasil disimpan!');
             userModal.modal('hide');
@@ -287,7 +294,6 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
     // Reset Password
     $(document).off('click', '.btnResetPass').on('click', '.btnResetPass', function () {
       const id = $(this).data('id');
-      console.log('Reset password ID:', id);
       $('#reset_usr_id').val(id);
       $('#new_pass, #confirm_pass').val('');
       resetModal.modal('show');
@@ -317,12 +323,25 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
           } else {
             alert('Gagal reset password: ' + res);
           }
-        },
-        error: function (xhr, status, err) {
-          alert('Terjadi kesalahan: ' + err);
         }
       });
     });
 
-  }, 300); 
+    // Username tanpa spasi
+    $('#username').on('keypress', function (e) {
+      if (e.key === ' ') e.preventDefault();
+    }).on('input', function () {
+      this.value = this.value.replace(/\s+/g, '');
+    });
+
+    // 👁️ Toggle Password
+    $('#togglePassword').on('click', function () {
+      const input = $('#password');
+      const icon = $('#eyeIcon');
+      const type = input.attr('type') === 'password' ? 'text' : 'password';
+      input.attr('type', type);
+      icon.toggleClass('fa-eye fa-eye-slash');
+    });
+
+  }, 300);
 </script>

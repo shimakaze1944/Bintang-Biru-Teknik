@@ -2,7 +2,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-if (session_status() === PHP_SESSION_NONE) session_start();
+if (session_status() === PHP_SESSION_NONE)
+  session_start();
 include_once(__DIR__ . '/../controller/auth/db_connection.php');
 
 // hanya admin & bbteknik
@@ -28,6 +29,7 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
           <thead class="table-light text-center">
             <tr>
               <th>No</th>
+              <th>Kode Layanan</th>
               <th>Nama Layanan</th>
               <th>Harga (Rp)</th>
               <th>Keterangan</th>
@@ -43,6 +45,7 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
               while ($row = $q->fetch_assoc()) {
                 echo "<tr>
                         <td class='text-center'>$no</td>
+                        <td class='text-center'>{$row['layanan_kode']}</td>
                         <td>{$row['layanan_nama']}</td>
                         <td class='text-end'>Rp " . number_format($row['layanan_harga'], 0, ',', '.') . "</td>
                         <td>{$row['layanan_keterangan']}</td>
@@ -69,7 +72,8 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
 </div>
 
 <!-- MODAL TAMBAH / EDIT LAYANAN -->
-<div class="modal fade" id="layananModal" tabindex="-1" role="dialog" aria-labelledby="layananModalLabel" aria-hidden="true">
+<div class="modal fade" id="layananModal" tabindex="-1" role="dialog" aria-labelledby="layananModalLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content border-0 shadow">
       <div class="modal-header bg-primary text-white">
@@ -82,6 +86,11 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
         <div class="modal-body">
           <input type="hidden" name="layanan_id" id="layanan_id">
           <input type="hidden" name="action" id="form_action" value="create">
+
+          <div class="form-group">
+            <label>Kode Layanan</label>
+            <input type="text" name="layanan_kode" id="layanan_kode" class="form-control" required maxlength="50">
+          </div>
 
           <div class="form-group">
             <label>Nama Layanan</label>
@@ -108,88 +117,88 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
   </div>
 </div>
 
-<!-- Pastikan jQuery tersedia dulu -->
 <script src="vendor/jquery/jquery.min.js"></script>
 
 <script>
-$(function () {
-  console.log(' Script Master Layanan ready');
+  $(function () {
+    console.log(' Script Master Layanan ready');
 
-  const layananModal = $('#layananModal');
+    const layananModal = $('#layananModal');
 
-  // Tambah Layanan
-  $(document).on('click', '#btnAddLayanan', function () {
-    console.log(' Tombol tambah layanan diklik');
-    $('#layananForm')[0].reset();
-    $('#layanan_id').val('');
-    $('#form_action').val('create');
-    $('#modalTitle').text('Tambah Layanan');
-    layananModal.modal('show');
-  });
+    // Tambah Layanan
+    $(document).on('click', '#btnAddLayanan', function () {
+      console.log(' Tombol tambah layanan diklik');
+      $('#layananForm')[0].reset();
+      $('#layanan_id').val('');
+      $('#form_action').val('create');
+      $('#modalTitle').text('Tambah Layanan');
+      layananModal.modal('show');
+    });
 
-  // Edit Layanan
-  $(document).on('click', '.btnEditLayanan', function () {
-    const id = $(this).data('id');
-    console.log(' Edit diklik untuk ID:', id);
+    // Edit Layanan
+    $(document).on('click', '.btnEditLayanan', function () {
+      const id = $(this).data('id');
+      console.log(' Edit diklik untuk ID:', id);
 
-    fetch(`controller/master/layanan_controller.php?action=get&id=${id}`)
-      .then(res => res.json())
-      .then(data => {
-        if (!data || !data.layanan_id) {
-          alert('Data layanan tidak ditemukan');
-          return;
+      fetch(`controller/master/layanan_controller.php?action=get&id=${id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || !data.layanan_id) {
+            alert('Data layanan tidak ditemukan');
+            return;
+          }
+
+          $('#layanan_id').val(data.layanan_id);
+          $('#layanan_kode').val(data.layanan_kode);
+          $('#layanan_nama').val(data.layanan_nama);
+          $('#layanan_harga').val(data.layanan_harga);
+          $('#layanan_keterangan').val(data.layanan_keterangan);
+          $('#form_action').val('edit');
+          $('#modalTitle').text('Edit Layanan');
+
+          layananModal.modal('show');
+        })
+        .catch(err => {
+          console.error('Gagal ambil data layanan:', err);
+          alert('Gagal mengambil data layanan.');
+        });
+    });
+
+    // Simpan
+    $(document).on('submit', '#layananForm', function (e) {
+      e.preventDefault();
+      const formData = $(this).serialize();
+      console.log(' Simpan diklik, action:', $('#form_action').val());
+
+      $.ajax({
+        url: 'controller/master/layanan_controller.php',
+        method: 'POST',
+        data: formData,
+        success: function (res) {
+          console.log('Respon:', res);
+          if (res.trim() === 'OK') {
+            alert('Data layanan berhasil disimpan!');
+            layananModal.modal('hide');
+            location.reload();
+          } else {
+            alert('Gagal menyimpan: ' + res);
+          }
+        },
+        error: function (xhr, status, err) {
+          alert('Terjadi kesalahan: ' + err);
+          console.error(err);
         }
-
-        $('#layanan_id').val(data.layanan_id);
-        $('#layanan_nama').val(data.layanan_nama);
-        $('#layanan_harga').val(data.layanan_harga);
-        $('#layanan_keterangan').val(data.layanan_keterangan);
-        $('#form_action').val('edit');
-        $('#modalTitle').text('Edit Layanan');
-
-        layananModal.modal('show');
-      })
-      .catch(err => {
-        console.error('Gagal ambil data layanan:', err);
-        alert('Gagal mengambil data layanan.');
       });
-  });
+    });
 
-  // Simpan
-  $(document).on('submit', '#layananForm', function (e) {
-    e.preventDefault();
-    const formData = $(this).serialize();
-    console.log(' Simpan diklik, action:', $('#form_action').val());
+    // Delete Layanan
+    $(document).on('click', '.btnDeleteLayanan', function () {
+      const id = $(this).data('id');
+      console.log(' Hapus diklik untuk ID:', id);
 
-    $.ajax({
-      url: 'controller/master/layanan_controller.php',
-      method: 'POST',
-      data: formData,
-      success: function (res) {
-        console.log('Respon:', res);
-        if (res.trim() === 'OK') {
-          alert('Data layanan berhasil disimpan!');
-          layananModal.modal('hide');
-          location.reload();
-        } else {
-          alert('Gagal menyimpan: ' + res);
-        }
-      },
-      error: function (xhr, status, err) {
-        alert('Terjadi kesalahan: ' + err);
-        console.error(err);
+      if (confirm('Yakin ingin menghapus layanan ini?')) {
+        window.location.href = `controller/master/layanan_controller.php?action=delete&id=${id}`;
       }
     });
   });
-
-  // Delete Layanan
-  $(document).on('click', '.btnDeleteLayanan', function () {
-    const id = $(this).data('id');
-    console.log(' Hapus diklik untuk ID:', id);
-
-    if (confirm('Yakin ingin menghapus layanan ini?')) {
-      window.location.href = `controller/master/layanan_controller.php?action=delete&id=${id}`;
-    }
-  });
-});
 </script>

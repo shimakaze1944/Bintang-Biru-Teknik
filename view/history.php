@@ -38,7 +38,6 @@ if ($from && $to) {
 }
 
 
-// Query utama: ambil semua servis lengkap
 $q = $conn->query("
   SELECT 
     s.svs_id,
@@ -107,7 +106,7 @@ $q = $conn->query("
         default => 'dark'
       };
 
-      echo '<li class="list-group-item shadow-sm mb-4">';
+      echo '<li class="list-group-item shadow-sm mb-4 history-item" data-id="' . $row['svs_id'] . '">';
       echo '<div class="d-flex justify-content-between align-items-start">';
       echo '<div class="me-3">';
       echo '<div><strong>' . htmlspecialchars($row['no_wo']) . '</strong> — ' . htmlspecialchars($row['nama_kapal']) . '</div>';
@@ -143,6 +142,17 @@ $q = $conn->query("
     min-width: 180px;
   }
 
+  .riwayat-item,
+  .history-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .riwayat-item:hover,
+  .history-item:hover {
+    background-color: #f1f5ff;
+  }
+
   @media (max-width: 768px) {
     form#formFilter {
       flex-direction: column;
@@ -150,3 +160,13 @@ $q = $conn->query("
     }
   }
 </style>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+  // Klik item riwayat di History → tampilkan modal detail
+  $(document).on('click', '.history-item', function () {
+    const id = $(this).data('id');
+    if (id) showServisDetail(id);
+  });
+</script>
+
+<?php include __DIR__ . '/components/modal_detail_service.php'; ?>
