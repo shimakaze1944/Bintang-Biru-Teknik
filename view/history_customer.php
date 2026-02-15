@@ -7,21 +7,44 @@ if (!in_array($_SESSION['sess_usr_status'], ['Customer'])) {
   exit;
 }
 
-// pastikan user punya vendor id
 if (!isset($_SESSION['sess_usr_vendor']) || empty($_SESSION['sess_usr_vendor'])) {
   echo "<div class='alert alert-warning'>Akun ini belum terhubung ke data vendor. Hubungi admin.</div>";
   exit;
 }
 
+include_once(__DIR__ . '/../controller/auth/db_connection.php');
+
 $vendor_id = $_SESSION['sess_usr_vendor'];
 
-// ambil filter tanggal
+// Filter tanggal
 $tgl_dari = $_GET['tgl_dari'] ?? '';
 $tgl_sampai = $_GET['tgl_sampai'] ?? '';
 
 $where = "WHERE s.vendor_id = $vendor_id";
+
 if ($tgl_dari && $tgl_sampai) {
-  $where .= " AND (s.tgl_masuk BETWEEN '$tgl_dari' AND '$tgl_sampai')";
+  $where .= "
+    AND (
+      (DATE(s.tgl_masuk) BETWEEN '$tgl_dari' AND '$tgl_sampai')
+      OR (DATE(s.tgl_keluar) BETWEEN '$tgl_dari' AND '$tgl_sampai')
+      OR ('$tgl_dari' BETWEEN DATE(s.tgl_masuk) AND DATE(IFNULL(s.tgl_keluar, NOW())))
+      OR ('$tgl_sampai' BETWEEN DATE(s.tgl_masuk) AND DATE(IFNULL(s.tgl_keluar, NOW())))
+    )
+  ";
+} elseif ($tgl_dari) {
+  $where .= "
+    AND (
+      DATE(s.tgl_masuk) >= '$tgl_dari'
+      OR DATE(s.tgl_keluar) >= '$tgl_dari'
+    )
+  ";
+} elseif ($tgl_sampai) {
+  $where .= "
+    AND (
+      DATE(s.tgl_masuk) <= '$tgl_sampai'
+      OR DATE(s.tgl_keluar) <= '$tgl_sampai'
+    )
+  ";
 }
 
 $q = $conn->query("
@@ -54,92 +77,107 @@ $q = $conn->query("
   <!-- FILTER RANGE TANGGAL -->
   <form method="GET" action="">
     <input type="hidden" name="cs" value="History">
-    <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
+    <div class="d-flex flex-wrap align-items-end gap-3 mb-4">
       <div>
         <label class="form-label">Dari Tanggal</label>
-        <input type="date" name="tgl_dari" value="<?= htmlspecialchars($tgl_dari) ?>" class="form-control" style="width:180px;">
+        <input type="date" name="tgl_dari" value="<?= htmlspecialchars($tgl_dari) ?>" class="form-control"
+          style="min-width:180px;">
       </div>
       <div>
         <label class="form-label">Sampai Tanggal</label>
-        <input type="date" name="tgl_sampai" value="<?= htmlspecialchars($tgl_sampai) ?>" class="form-control" style="width:180px;">
+        <input type="date" name="tgl_sampai" value="<?= htmlspecialchars($tgl_sampai) ?>" class="form-control"
+          style="min-width:180px;">
       </div>
-      <div>
-        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Tampilkan</button>
+      <div class="mt-2">
+        <button type="submit" class="btn btn-primary"><i class="fa fa-filter"></i> Filter</button>
         <a href="?cs=History" class="btn btn-secondary"><i class="fa fa-refresh"></i> Reset</a>
       </div>
     </div>
   </form>
 
-  <div class="card shadow-sm border-0">
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-striped align-middle text-center">
-          <thead class="table-light">
-            <tr>
-              <th>No</th>
-              <th>No WO</th>
-              <th>Nama Kapal</th>
-              <th>Teknisi</th>
-              <th>Layanan</th>
-              <th>Tgl Masuk</th>
-              <th>Tgl Keluar</th>
-              <th>Keterangan</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-            if ($q && $q->num_rows > 0) {
-              $no = 1;
-              while ($row = $q->fetch_assoc()) {
-                $color = match ($row['status']) {
-                  'Done' => 'success',
-                  'On Progress' => 'warning',
-                  'On Hold' => 'secondary',
-                  'Canceled' => 'danger',
-                  default => 'dark'
-                };
+  <?php
+  if (!$q) {
+    echo "<div class='alert alert-danger'>Query error: " . htmlspecialchars($conn->error) . "</div>";
+  } elseif ($q->num_rows > 0) {
+    echo '<ul class="list-group">';
+    while ($row = $q->fetch_assoc()) {
+      $tglMasuk = $row['tgl_masuk'] ? date('d-m-Y', strtotime($row['tgl_masuk'])) : '-';
+      $tglKeluar = $row['tgl_keluar'] ? date('d-m-Y', strtotime($row['tgl_keluar'])) : '-';
+      $layanan = $row['layanan'] ?: '-';
+      $teknisi = $row['teknisi'] ?: '-';
+      $keterangan = $row['keterangan'] ?: '-';
 
-                $tglMasuk = $row['tgl_masuk'] ? date('d/m/Y', strtotime($row['tgl_masuk'])) : '-';
-                $tglKeluar = $row['tgl_keluar'] ? date('d/m/Y', strtotime($row['tgl_keluar'])) : '-';
-                $teknisi = $row['teknisi'] ?: '-';
-                $layanan = $row['layanan'] ?: '-';
-                $ket = $row['keterangan'] ?: '-';
+      $badge = match ($row['status']) {
+        'Done' => 'success',
+        'On Progress' => 'warning',
+        'On Hold' => 'secondary',
+        'Canceled' => 'danger',
+        default => 'dark'
+      };
 
-                echo "
-                <tr>
-                  <td>$no</td>
-                  <td class='fw-bold'>{$row['no_wo']}</td>
-                  <td>{$row['nama_kapal']}</td>
-                  <td>$teknisi</td>
-                  <td>$layanan</td>
-                  <td>$tglMasuk</td>
-                  <td>$tglKeluar</td>
-                  <td class='text-start'>$ket</td>
-                  <td><span style ='color:white' class='badge bg-$color px-3 py-2'>{$row['status']}</span></td>
-                </tr>";
-                $no++;
-              }
-            } else {
-              echo "<tr><td colspan='9' class='text-muted'>Belum ada data servis pada periode ini.</td></tr>";
-            }
-            ?>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+      echo '<li class="list-group-item shadow-sm mb-4 history-item" data-id="' . $row['svs_id'] . '">';
+      echo '<div class="d-flex justify-content-between align-items-start">';
+      echo '<div class="me-3">';
+      echo '<div><strong>' . htmlspecialchars($row['no_wo']) . '</strong> — ' . htmlspecialchars($row['nama_kapal']) . '</div>';
+      echo '<small><b>Layanan:</b> ' . htmlspecialchars($layanan) . '</small><br>';
+      echo '<small><b>Teknisi:</b> ' . htmlspecialchars($teknisi) . '</small><br>';
+      echo '<small><b>Tanggal Masuk:</b> ' . $tglMasuk . '</small><br>';
+      echo '<small><b>Tanggal Keluar:</b> ' . $tglKeluar . '</small><br>';
+      echo '<small><b>Keterangan:</b> ' . htmlspecialchars($keterangan) . '</small>';
+      echo '</div>';
+      echo "<span class='badge bg-{$badge} align-self-start px-3 py-2' style='color:white; font-size:0.9rem;'>" . htmlspecialchars($row['status']) . "</span>";
+      echo '</div>';
+      echo '</li>';
+    }
+    echo '</ul>';
+  } else {
+    echo "<div class='text-muted'>Belum ada data servis pada periode ini.</div>";
+  }
+  ?>
 </div>
 
 <style>
-  .table td {
-    vertical-align: middle !important;
-    font-size: 0.9rem;
+  .list-group-item {
+    border-radius: 10px;
+    padding: 15px 20px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
   }
-  .table th {
-    font-size: 0.9rem;
+
+  .list-group-item:hover {
+    background-color: #f1f5ff;
   }
-  .table .badge {
-    font-size: 0.8rem;
+
+  .list-group-item small {
+    display: block;
+    margin-bottom: 4px;
+    color: #555;
+  }
+
+  form input.form-control {
+    min-width: 180px;
+  }
+
+  .badge {
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 768px) {
+    form {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 </style>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+  // Klik item riwayat → tampilkan modal detail
+  $(document).on('click', '.history-item', function () {
+    const id = $(this).data('id');
+    if (id) showServisDetail(id);
+  });
+</script>
+
+<?php include __DIR__ . '/components/modal_detail_service.php'; ?>

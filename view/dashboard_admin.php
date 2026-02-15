@@ -50,6 +50,17 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
     font-size: 1rem;
   }
 
+  .riwayat-item,
+  .history-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .riwayat-item:hover,
+  .history-item:hover {
+    background-color: #f1f5ff;
+  }
+
   @media (min-width: 1400px) {
     .dashboard-wrapper {
       max-width: 95vw;
@@ -157,13 +168,14 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
       <?php
       $q = $conn->query("
         SELECT 
-          s.no_wo,
-          s.nama_kapal,
-          v.vendor_name,
-          GROUP_CONCAT(DISTINCT p.pekerja_nama SEPARATOR ', ') AS teknisi,
-          s.status,
-          s.tgl_masuk,
-          s.keterangan
+           s.svs_id,
+           s.no_wo,
+           s.nama_kapal,
+           v.vendor_name,
+           GROUP_CONCAT(DISTINCT p.pekerja_nama SEPARATOR ', ') AS teknisi,
+           s.status,
+           s.tgl_masuk,
+           s.keterangan
         FROM tbl_servis s
         LEFT JOIN tbl_vendor v ON s.vendor_id = v.vendor_id
         LEFT JOIN tbl_servis_pekerja sp ON s.svs_id = sp.svs_id
@@ -183,7 +195,7 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
             $teknisi = $row['teknisi'] ?: '-';
             $keterangan = $row['keterangan'] ?: '-';
 
-            echo '<li class="list-group-item d-flex justify-content-between align-items-start">';
+            echo '<li class="list-group-item d-flex justify-content-between align-items-start riwayat-item" data-id="' . $row['svs_id'] . '">';
             echo '<div class="ms-2 me-auto">';
             echo '<div><strong>' . htmlspecialchars($row['no_wo']) . '</strong> — ' . htmlspecialchars($row['nama_kapal']) . '</div>';
             echo '<small class="text-muted">Vendor: ' . htmlspecialchars($row['vendor_name']) . ' • Tgl masuk: ' . $tgl . '</small><br>';
@@ -209,5 +221,14 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
       ?>
     </div>
   </div>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script>
+    // Klik item riwayat → buka modal detail
+    $(document).on('click', '.riwayat-item', function () {
+      const id = $(this).data('id');
+      if (id) showServisDetail(id);
+    });
+  </script>
 
+  <?php include __DIR__ . '/components/modal_detail_service.php'; ?>
 </div>

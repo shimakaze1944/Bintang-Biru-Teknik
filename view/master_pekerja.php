@@ -114,8 +114,7 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
     </div>
   </div>
 </div>
-
-<!-- jQuery pastikan ada -->
+s
 <script src="vendor/jquery/jquery.min.js"></script>
 
 <script>

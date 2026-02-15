@@ -79,13 +79,13 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
                         <td><span class='badge bg-{$badge}' style='color:white; padding:5px;'>{$row['status']}</span></td>
                         <td>{$row['keterangan']}</td>
                         <td>
-                          <button class='btn btn-sm btn-info me-1 btnDetailService' data-id='{$row['svs_id']}'>
+                          <button class='btn btn-sm btn-info me-1' onclick='showServisDetail({$row["svs_id"]})'>
                             <i class='fa fa-eye'></i> Detail
                           </button>
-                          <button class='btn btn-sm btn-warning me-1 btnEditService' data-id='{$row['svs_id']}'>
+                          <button class='btn btn-sm btn-warning me-1 btnEditService' data-id='{$row["svs_id"]}'>
                             <i class='fa fa-edit'></i> Ubah
                           </button>
-                          <button class='btn btn-sm btn-danger btnDeleteService' data-id='{$row['svs_id']}'>
+                          <button class='btn btn-sm btn-danger btnDeleteService' data-id='{$row["svs_id"]}'>
                             <i class='fa fa-trash'></i> Hapus
                           </button>
                         </td>
@@ -108,7 +108,7 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content border-0 shadow">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title"><i class="fa fa-wrench me-2"></i><span id="modalTitle">Tambah Servis</span></h5>
+        <h5 class="modal-title"><i class="fa fa-wrench me-2"></i><span id="modalTitle"> Tambah Servis</span></h5>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">&times;</button>
       </div>
 
@@ -117,14 +117,16 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
           <input type="hidden" name="svs_id" id="svs_id">
           <input type="hidden" name="action" id="form_action" value="create">
 
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">No WO</label>
-              <input type="text" name="no_wo" id="no_wo" class="form-control" required>
-            </div>
+          <!-- No WO -->
+          <div class="form-group mb-3">
+            <label class="fw-bold">No. WO</label>
+            <input type="text" name="no_wo" id="no_wo" class="form-control" required>
+          </div>
 
+          <!-- Vendor & Kapal -->
+          <div class="form-row mb-3">
             <div class="col-md-6">
-              <label class="form-label">Vendor</label>
+              <label class="fw-bold">Nama Vendor</label>
               <select name="vendor_id" id="vendor_id" class="form-control" required>
                 <option value="">-- Pilih Vendor --</option>
                 <?php
@@ -135,48 +137,30 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
                 ?>
               </select>
             </div>
-
             <div class="col-md-6">
-              <label class="form-label">Nama Kapal</label>
+              <label class="fw-bold">Nama Kapal</label>
               <select name="nama_kapal" id="nama_kapal" class="form-control" disabled required>
                 <option value="">-- Pilih Vendor Dulu --</option>
               </select>
             </div>
+          </div>
 
+          <!-- Tanggal Masuk / Keluar -->
+          <div class="form-row mb-3">
             <div class="col-md-6">
-              <label class="form-label">Tanggal Masuk</label>
+              <label class="fw-bold">Tanggal Masuk</label>
               <input type="date" name="tgl_masuk" id="tgl_masuk" class="form-control" required>
             </div>
-
             <div class="col-md-6">
-              <label class="form-label">Tanggal Keluar</label>
+              <label class="fw-bold">Tanggal Keluar</label>
               <input type="date" name="tgl_keluar" id="tgl_keluar" class="form-control">
             </div>
+          </div>
 
+          <!-- Teknisi & Status -->
+          <div class="form-row mb-3">
             <div class="col-md-6">
-              <label class="form-label">Status</label>
-              <select name="status" id="status" class="form-control">
-                <option value="On Progress">On Progress</option>
-                <option value="On Hold">On Hold</option>
-                <option value="Done">Done</option>
-                <option value="Canceled">Canceled</option>
-              </select>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Layanan</label>
-              <select name="layanan[]" id="layanan" class="form-control select2" multiple>
-                <?php
-                $lay = $conn->query("SELECT * FROM tbl_layanan ORDER BY layanan_nama ASC");
-                while ($l = $lay->fetch_assoc()) {
-                  echo "<option value='{$l['layanan_id']}'>{$l['layanan_nama']}</option>";
-                }
-                ?>
-              </select>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Teknisi</label>
+              <label class="fw-bold">Teknisi</label>
               <select name="pekerja[]" id="pekerja" class="form-control select2" multiple>
                 <?php
                 $p = $conn->query("SELECT * FROM tbl_pekerja ORDER BY pekerja_nama ASC");
@@ -186,17 +170,49 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
                 ?>
               </select>
             </div>
-
-            <div class="col-md-12">
-              <label class="form-label">Keterangan</label>
-              <textarea name="keterangan" id="keterangan" class="form-control" rows="2"></textarea>
+            <div class="col-md-6">
+              <label class="fw-bold">Status</label>
+              <select name="status" id="status" class="form-control">
+                <option value="On Progress">On Progress</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Done">Done</option>
+                <option value="Canceled">Canceled</option>
+              </select>
             </div>
+          </div>
+
+          <!-- Layanan -->
+          <div class="form-group mb-3">
+            <label class="fw-bold">Layanan</label>
+            <select name="layanan[]" id="layanan" class="form-control select2" multiple>
+              <?php
+              $lay = $conn->query("SELECT * FROM tbl_layanan ORDER BY layanan_nama ASC");
+              while ($l = $lay->fetch_assoc()) {
+                echo "<option value='{$l['layanan_id']}'>{$l['layanan_nama']}</option>";
+              }
+              ?>
+            </select>
+          </div>
+
+          <!-- Keterangan -->
+          <div class="form-group mb-3">
+            <label class="fw-bold">Keterangan</label>
+            <textarea name="keterangan" id="keterangan" class="form-control" rows="2"></textarea>
+          </div>
+
+          <!-- Total Harga -->
+          <div class="form-group mb-3">
+            <label class="fw-bold">Total Harga</label>
+            <input type="text" id="total_harga" name="total_harga" class="form-control text-end fw-bold" readonly
+              value="0">
           </div>
         </div>
 
         <div class="modal-footer">
-          <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Simpan</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-success px-4">
+            <i class="fa fa-save"></i> Simpan
+          </button>
+          <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">Batal</button>
         </div>
       </form>
     </div>
@@ -205,7 +221,6 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
 
 <!-- ================= LIBRARIES ================= -->
 <link rel="stylesheet" href="assets/select2/select2.min.css">
-
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -213,7 +228,26 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
 
 <!-- ===================== STYLE ===================== -->
 <style>
-  /* ======== BASE FORM STYLING ======== */
+  /* ======== DETAIL MODAL LAYOUT ======== */
+  .modal-body label {
+    color: #333;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .modal-body .form-control[readonly] {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
+
+  .modal-body .text-end {
+    text-align: right !important;
+  }
+
+  .modal-footer {
+    border-top: 1px solid #dee2e6;
+  }
+
   .modal-body .form-label {
     font-weight: 600;
   }
@@ -278,7 +312,6 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
     position: relative;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     padding-right: 36px !important;
-    /* ruang clear-all */
   }
 
   .select2-container--default.select2-bar .select2-selection--multiple:focus-within {
@@ -317,7 +350,6 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
   }
 
   /* tombol X clear-all */
-
   .select2-container--default.select2-bar .select2-selection--multiple.show-clear .select2-selection__clear {
     display: block !important;
   }
@@ -364,8 +396,6 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
         }).each(function () {
           $(this).next('.select2-container').addClass('select2-bar');
         });
-
-        // ======== FIX: Hanya bisa hapus via X item atau clear-all, bukan klik ulang ========
 
         let allowUnselect = false;
 
@@ -433,6 +463,25 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
           }
         }
 
+        // ======== FITUR TAMBAHAN: Hitung Total Harga Otomatis Berdasarkan Layanan ========
+        $(document).on('change', '#layanan', function () {
+          const selected = $(this).val() || [];
+          if (selected.length === 0) {
+            $('#total_harga').val(0);
+            return;
+          }
+
+          $.ajax({
+            url: 'controller/master/service_controller.php',
+            type: 'GET',
+            data: { action: 'get_price', ids: selected.join(',') },
+            success: function (res) {
+              const total = parseFloat(res || 0);
+              $('#total_harga').val(total.toLocaleString('id-ID'));
+            }
+          });
+        });
+
         // =============== EVENT HANDLER ===============
 
         // Tambah Servis
@@ -471,36 +520,10 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
               $('#nama_kapal').val(d.nama_kapal);
               $('#layanan').val(d.layanan).trigger('change');
               $('#pekerja').val(d.pekerja).trigger('change');
+              $('#total_harga').val(d.total_harga ? parseFloat(d.total_harga).toLocaleString('id-ID') : 0);
               $('#form_action').val('edit');
               $('#modalTitle').text('Edit Servis');
               $('.select2').each(function () { setSelect2Disabled($(this), false); });
-              modal.modal('show');
-            });
-        });
-
-        // Detail Servis
-        $(document).on('click', '.btnDetailService', function () {
-          const id = $(this).data('id');
-          fetch(`controller/master/service_controller.php?action=get&id=${id}`)
-            .then(res => res.json())
-            .then(async data => {
-              $('#svs_id').val(data.svs_id);
-              $('#no_wo').val(data.no_wo);
-              $('#vendor_id').val(data.vendor_id).trigger('change');
-              $('#tgl_masuk').val(data.tgl_masuk);
-              $('#tgl_keluar').val(data.tgl_keluar);
-              $('#status').val(data.status);
-              $('#keterangan').val(data.keterangan);
-              await new Promise(resolve => setTimeout(resolve, 400));
-              $('#nama_kapal').val(data.nama_kapal);
-              $('#layanan').val(data.layanan).trigger('change');
-              $('#pekerja').val(data.pekerja).trigger('change');
-              $('#modalTitle').text('Detail Servis');
-              $('#form_action').val('view');
-              $('#serviceForm :input').prop('disabled', true);
-              $('.select2').each(function () { setSelect2Disabled($(this), true); });
-              $('.btn-success').hide();
-              $('.btn-secondary').text('Tutup');
               modal.modal('show');
             });
         });
@@ -540,9 +563,17 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
             location.href = `controller/master/service_controller.php?action=delete&id=${id}`;
           }
         });
+
+        // ======== FIX: modal backdrop nutup navbar ========
+        $('#serviceModal').on('hidden.bs.modal', function () {
+          $('.modal-backdrop').remove();
+          $('body').removeClass('modal-open');
+        });
       })
       .fail(function (_, __, err) {
         console.error('Gagal load Select2:', err);
       });
   });
 </script>
+
+<?php include __DIR__ . '/components/modal_detail_service.php'; ?>

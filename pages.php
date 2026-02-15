@@ -31,6 +31,7 @@ switch ($cs) {
     include_once(__DIR__ . '/view/master_layanan.php');
     break;
 
+  //HISTORY SESUAI ROLE
   case 'History':
     if (in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
       include_once(__DIR__ . '/view/history.php');
