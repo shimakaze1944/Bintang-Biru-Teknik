@@ -18,7 +18,7 @@ $isAdmin = in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik']);
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Bintang Biru Teknik | Home</title>
-  <link rel="shortcut icon" href="image/logo.png">
+  <link rel="shortcut icon" href="image/BBTeknikLogo.png">
 
   <!-- Bootstrap & Icons -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -146,104 +146,88 @@ $isAdmin = in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik']);
 <body class="fixed-nav sticky-footer bg-dark" id="page-top">
 
   <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
-    <a class="navbar-brand" href="home.php">
-      <img src="image/logo_home.png" alt="Logo" height="45">
-    </a>
-    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
-      data-target="#navbarResponsive">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav" style="background-color:#132A4A;">
+    <div class="container-fluid">
+      <!-- Brand -->
+      <a class="navbar-brand" href="home.php">
+        <img src="image/BBTeknikLogo.png" alt="Logo" height="45">
+      </a>
 
-    <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+      <!-- Burger / Toggle -->
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#mainNavbar"
+        aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <?php if ($isAdmin): ?>
+      <!-- Menu -->
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <!-- kiri -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <?php if ($isAdmin): ?>
+            <li class="nav-item"><a class="nav-link" href="home.php"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" data-toggle="dropdown"
+                aria-expanded="false">
+                <i class="fa fa-fw fa-database"></i> Master Data
+              </a>
+              <div class="dropdown-menu border-0 shadow" aria-labelledby="masterDropdown"
+                style="background-color:#173863;">
+                <?php if ($_SESSION['sess_usr_status'] === 'Admin'): ?>
+                  <a class="dropdown-item text-white" href="?cs=Master-User"><i class="fa fa-user me-2"></i> User</a>
+                <?php endif; ?>
+                <a class="dropdown-item text-white" href="?cs=Master-Kapal"><i class="fa fa-ship me-2"></i> Kapal</a>
+                <a class="dropdown-item text-white" href="?cs=Master-Pekerja"><i class="fa fa-building me-2"></i>
+                  Teknisi</a>
+                <a class="dropdown-item text-white" href="?cs=Master-Layanan"><i class="fa fa-wrench me-2"></i>
+                  Layanan</a>
+                <a class="dropdown-item text-white" href="?cs=Master-Vendor"><i class="fa fa-industry me-2"></i>
+                  Vendor</a>
+              </div>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="?cs=Service"><i class="fa fa-fw fa-wrench"></i> Service</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="?cs=History"><i class="fa fa-fw fa-history"></i> History</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="?cs=Cashflow"><i class="fa fa-fw fa-money"></i> Cashflow</a>
+            </li>
+          <?php else: ?>
+            <li class="nav-item"><a class="nav-link" href="home.php"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="?cs=History"><i class="fa fa-fw fa-history"></i> History
+                Servis</a></li>
+          <?php endif; ?>
+        </ul>
 
-          <!-- ================= MENU ADMIN ================= -->
+        <!-- spacer biar kanan kiri terpisah -->
+        <div class="flex-grow-1"></div>
 
-          <li class="nav-item active">
-            <a class="nav-link" href="home.php">
-              <i class="fa fa-fw fa-dashboard"></i> Dashboard
+        <!-- kanan -->
+        <ul class="navbar-nav ml-auto align-items-center">
+          <li class="nav-item dropdown me-2">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-toggle="dropdown" aria-expanded="false">
+              <i class="fa fa-fw fa-user"></i> <?= htmlspecialchars($_SESSION['sess_usr_nama']); ?>
             </a>
+            <div class="dropdown-menu dropdown-menu-right border-0 shadow" aria-labelledby="userDropdown"
+              style="background-color:#173863;">
+              <a class="dropdown-item text-white" href="?cs=Ubah-Data"><i class="fa fa-edit text-danger me-2"></i> Ubah
+                Data Pribadi</a>
+              <a class="dropdown-item text-white" href="?cs=Ubah-Sandi"><i class="fa fa-key text-success me-2"></i> Ubah
+                Kata Sandi</a>
+            </div>
           </li>
 
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" role="button" data-toggle="dropdown"
-              aria-expanded="false">
-              <i class="fa fa-fw fa-database"></i> Master Data
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark border-0 shadow" aria-labelledby="masterDropdown">
-              <?php if ($_SESSION['sess_usr_status'] === 'Admin'): ?>
-                <li><a class="dropdown-item" href="?cs=Master-User"><i class="fa fa-user me-2"></i> User</a></li>
-              <?php endif; ?>
-              <li><a class="dropdown-item" href="?cs=Master-Kapal"><i class="fa fa-ship me-2"></i> Kapal</a></li>
-              <li><a class="dropdown-item" href="?cs=Master-Pekerja"><i class="fa fa-building me-2"></i> Teknisi</a></li>
-              <li><a class="dropdown-item" href="?cs=Master-Layanan"><i class="fa fa-wrench me-2"></i> Layanan</a></li>
-              <li><a class="dropdown-item" href="?cs=Master-Vendor"><i class="fa fa-industry me-2"></i> Vendor</a></li>
-            </ul>
-          </li>
-
-
-
-          <li class="nav-item">
-            <a class="nav-link" href="?cs=Service">
-              <i class="fa fa-fw fa-wrench"></i> Service
+          <li class="nav-item nav-logout">
+            <a class="nav-link" data-toggle="modal" data-target="#logoutModal">
+              <i class="fa fa-fw fa-sign-out"></i> Logout
             </a>
           </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="?cs=History">
-              <i class="fa fa-fw fa-history"></i> History
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="?cs=Cashflow">
-              <i class="fa fa-fw fa-money"></i> Cashflow
-            </a>
-          </li>
-
-        <?php else: ?>
-
-          <!-- ================= MENU CUSTOMER ================= -->
-
-          <li class="nav-item active">
-            <a class="nav-link" href="home.php">
-              <i class="fa fa-fw fa-dashboard"></i> Dashboard
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="?cs=History">
-              <i class="fa fa-fw fa-history"></i> History Servis
-            </a>
-          </li>
-
-        <?php endif; ?>
-
-      </ul>
-
-
-      <!-- Top Nav -->
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle mr-lg-2" href="#" id="userDropdown" data-toggle="dropdown">
-            <i class="fa fa-fw fa-user"></i> <?php echo $_SESSION['sess_usr_nama']; ?>
-          </a>
-          <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="?cs=Ubah-Data"><i class="fa fa-edit text-danger"></i> Ubah Data Pribadi</a>
-            <a class="dropdown-item" href="?cs=Ubah-Sandi"><i class="fa fa-key text-success"></i> Ubah Kata Sandi</a>
-          </div>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" data-toggle="modal" data-target="#logoutModal">
-            <i class="fa fa-fw fa-sign-out"></i> Logout
-          </a>
-        </li>
-      </ul>
+        </ul>
+      </div>
     </div>
   </nav>
+
+
 
   <!-- Content -->
   <div class="content-wrapper">
@@ -275,6 +259,8 @@ $isAdmin = in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik']);
   </div>
 
   <script src="vendor/jquery/jquery.min.js"></script>
+  <link rel="stylesheet" href="assets/select2/select2.min.css">
+  <script src="assets/select2/select2.full.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
   <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
   <script src="vendor/datatables/media/js/jquery.dataTables.min.js"></script>
@@ -297,6 +283,11 @@ $isAdmin = in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik']);
         const target = $(this).attr('href');
         $(target).collapse('toggle');
       });
+    });
+  </script>
+  <script>
+    $('.navbar-nav>li>a').on('click', function () {
+      $('.navbar-collapse').collapse('hide');
     });
   </script>
 </body>

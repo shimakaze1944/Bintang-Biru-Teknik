@@ -219,13 +219,6 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
   </div>
 </div>
 
-<!-- ================= LIBRARIES ================= -->
-<link rel="stylesheet" href="assets/select2/select2.min.css">
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <!-- ===================== STYLE ===================== -->
 <style>
   /* ======== DETAIL MODAL LAYOUT ======== */
@@ -378,201 +371,280 @@ if (!in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik'])) {
 
 <!-- ===================== SCRIPT ===================== -->
 <script>
-  $(window).on('load', function () {
+  document.addEventListener("DOMContentLoaded", function () {
+
     const modal = $('#serviceModal');
 
-    // Load Select2
-    $.getScript('assets/select2/select2.full.min.js')
-      .done(function () {
-        console.log('Select2 JS loaded');
+    // === Inisialisasi Select2 ===
+    $('.select2').select2({
+      placeholder: "Klik untuk pilih",
+      width: '100%',
+      closeOnSelect: false,
+      allowClear: true,
+      dropdownParent: $('#serviceModal')
+    }).each(function () {
+      $(this).next('.select2-container').addClass('select2-bar');
+    });
 
-        // === Inisialisasi Select2 ===
-        $('.select2').select2({
-          placeholder: "Klik untuk pilih",
-          width: '100%',
-          closeOnSelect: false,
-          allowClear: true,
-          dropdownParent: $('#serviceModal')
-        }).each(function () {
-          $(this).next('.select2-container').addClass('select2-bar');
-        });
+    let allowUnselect = false;
 
-        let allowUnselect = false;
+    $(document).on('mousedown.select2', '.select2-selection__choice__remove', function () {
+      allowUnselect = true;
+    });
 
-        // Saat klik X di item → izinkan unselect
-        $(document).on('mousedown.select2', '.select2-selection__choice__remove', function () {
-          allowUnselect = true;
-        });
+    $(document).on('select2:unselecting', '.select2', function (e) {
+      if (!allowUnselect) {
+        e.preventDefault();
+      }
+      setTimeout(() => { allowUnselect = false; }, 50);
+    });
 
-        // Cegah unselect via klik ulang di dropdown
-        $(document).on('select2:unselecting', '.select2', function (e) {
-          if (!allowUnselect) {
-            e.preventDefault();
-          }
-          setTimeout(() => { allowUnselect = false; }, 50);
-        });
+    // ===== CLEAR BUTTON =====
+    function updateClearVisibility($select) {
+      const $container = $select.next('.select2-container');
+      const hasValue = ($select.val() && $select.val().length > 0);
+      const disabled = $select.prop('disabled');
 
-        // ======== FUNGSI TAMBAHAN (CLEAR BUTTON, ENABLE/DISABLE, DLL) ========
+      if (hasValue && !disabled) {
+        $container.find('.select2-selection--multiple').addClass('show-clear');
+      } else {
+        $container.find('.select2-selection--multiple').removeClass('show-clear');
+      }
+    }
 
-        // Update tampilan tombol clear-all
-        function updateClearVisibility($select) {
-          const $container = $select.next('.select2-container');
-          const hasValue = ($select.val() && $select.val().length > 0);
-          const disabled = $select.prop('disabled');
-          if (hasValue && !disabled) {
-            $container.find('.select2-selection--multiple').addClass('show-clear');
-          } else {
-            $container.find('.select2-selection--multiple').removeClass('show-clear');
-          }
+    $(document).on('click', '.select2-selection__clear', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const $select = $(this).closest('.select2-container').prev('select');
+
+      $select.val(null).trigger('change');
+
+      if ($select.data('select2')) {
+        $select.select2('close');
+      }
+
+      updateClearVisibility($select);
+    });
+
+    $('.select2').each(function () {
+      updateClearVisibility($(this));
+    });
+
+    $(document).on('change', '.select2', function () {
+      updateClearVisibility($(this));
+    });
+
+    // ===== ENABLE DISABLE SELECT2 =====
+    function setSelect2Disabled($select, disabled) {
+
+      $select.prop('disabled', disabled);
+      $select.trigger('change.select2');
+
+      const $container = $select.next('.select2-container');
+
+      if (disabled) {
+        $container.addClass('select2-disabled');
+        $container.find('.select2-selection--multiple').removeClass('show-clear');
+
+        if ($select.data('select2')) {
+          $select.select2('close');
         }
 
-        // Klik tombol clear-all (X kanan)
-        $(document).on('click', '.select2-selection__clear', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          const $select = $(this).closest('.select2-container').prev('select');
-          $select.val(null).trigger('change');
-          if ($select.data('select2')) {
-            $select.select2('close');
-          }
-          updateClearVisibility($select);
-        });
+      } else {
+        $container.removeClass('select2-disabled');
+        updateClearVisibility($select);
+      }
+    }
 
-        // Update clear-all saat ada perubahan
-        $('.select2').each(function () {
-          updateClearVisibility($(this));
-        });
-        $(document).on('change', '.select2', function () {
-          updateClearVisibility($(this));
-        });
+    // ===== HITUNG TOTAL HARGA =====
+    $(document).on('change', '#layanan', function () {
 
-        // Enable/disable Select2 secara penuh
-        function setSelect2Disabled($select, disabled) {
-          $select.prop('disabled', disabled);
-          $select.trigger('change.select2');
-          const $container = $select.next('.select2-container');
-          if (disabled) {
-            $container.addClass('select2-disabled');
-            $container.find('.select2-selection--multiple').removeClass('show-clear');
-            if ($select.data('select2')) {
-              $select.select2('close');
-            }
-          } else {
-            $container.removeClass('select2-disabled');
-            updateClearVisibility($select);
-          }
+      const selected = $(this).val() || [];
+
+      if (selected.length === 0) {
+        $('#total_harga').val(0);
+        return;
+      }
+
+      $.ajax({
+        url: 'controller/master/service_controller.php',
+        type: 'GET',
+        data: {
+          action: 'get_price',
+          ids: selected.join(',')
+        },
+        success: function (res) {
+
+          const total = parseFloat(res || 0);
+
+          $('#total_harga').val(total.toLocaleString('id-ID'));
         }
-
-        // ======== FITUR TAMBAHAN: Hitung Total Harga Otomatis Berdasarkan Layanan ========
-        $(document).on('change', '#layanan', function () {
-          const selected = $(this).val() || [];
-          if (selected.length === 0) {
-            $('#total_harga').val(0);
-            return;
-          }
-
-          $.ajax({
-            url: 'controller/master/service_controller.php',
-            type: 'GET',
-            data: { action: 'get_price', ids: selected.join(',') },
-            success: function (res) {
-              const total = parseFloat(res || 0);
-              $('#total_harga').val(total.toLocaleString('id-ID'));
-            }
-          });
-        });
-
-        // =============== EVENT HANDLER ===============
-
-        // Tambah Servis
-        $('#btnAddService').on('click', function () {
-          $('#serviceForm')[0].reset();
-          $('#svs_id').val('');
-          $('#form_action').val('create');
-          $('#modalTitle').text('Tambah Servis');
-          $('#layanan').val(null).trigger('change');
-          $('#pekerja').val(null).trigger('change');
-          $('#serviceForm :input').prop('disabled', false);
-          $('.select2').each(function () { setSelect2Disabled($(this), false); });
-          $('.btn-success').show();
-          $('.btn-secondary').text('Batal');
-          modal.modal('show');
-        });
-
-        // Edit Servis
-        $(document).on('click', '.btnEditService', function () {
-          const id = $(this).data('id');
-          $('#serviceForm :input').prop('disabled', false);
-          $('.btn-success').show();
-          $('.btn-secondary').text('Batal');
-
-          fetch(`controller/master/service_controller.php?action=get&id=${id}`)
-            .then(r => r.json())
-            .then(async d => {
-              $('#svs_id').val(d.svs_id);
-              $('#no_wo').val(d.no_wo);
-              $('#vendor_id').val(d.vendor_id).trigger('change');
-              $('#tgl_masuk').val(d.tgl_masuk);
-              $('#tgl_keluar').val(d.tgl_keluar);
-              $('#status').val(d.status);
-              $('#keterangan').val(d.keterangan);
-              await new Promise(r => setTimeout(r, 400));
-              $('#nama_kapal').val(d.nama_kapal);
-              $('#layanan').val(d.layanan).trigger('change');
-              $('#pekerja').val(d.pekerja).trigger('change');
-              $('#total_harga').val(d.total_harga ? parseFloat(d.total_harga).toLocaleString('id-ID') : 0);
-              $('#form_action').val('edit');
-              $('#modalTitle').text('Edit Servis');
-              $('.select2').each(function () { setSelect2Disabled($(this), false); });
-              modal.modal('show');
-            });
-        });
-
-        // Vendor → Kapal
-        $('#vendor_id').on('change', function () {
-          const id = $(this).val();
-          const kapal = $('#nama_kapal');
-          kapal.prop('disabled', true).html('<option>Loading...</option>');
-          if (!id) { kapal.html('<option value="">-- Pilih Vendor Dulu --</option>'); return; }
-          fetch(`controller/master/get_kapal.php?vendor_id=${id}`)
-            .then(r => r.text())
-            .then(d => {
-              kapal.html('<option value="">-- Pilih Kapal --</option>' + d);
-              kapal.prop('disabled', false);
-            });
-        });
-
-        // Simpan data
-        $('#serviceForm').on('submit', function (e) {
-          e.preventDefault();
-          $.post('controller/master/service_controller.php', $(this).serialize(), function (res) {
-            if (res.trim() === 'OK') {
-              alert('Data servis berhasil disimpan!');
-              modal.modal('hide');
-              location.reload();
-            } else {
-              alert('Gagal menyimpan: ' + res);
-            }
-          });
-        });
-
-        // Hapus data
-        $(document).on('click', '.btnDeleteService', function () {
-          const id = $(this).data('id');
-          if (confirm('Yakin ingin menghapus data ini?')) {
-            location.href = `controller/master/service_controller.php?action=delete&id=${id}`;
-          }
-        });
-
-        // ======== FIX: modal backdrop nutup navbar ========
-        $('#serviceModal').on('hidden.bs.modal', function () {
-          $('.modal-backdrop').remove();
-          $('body').removeClass('modal-open');
-        });
-      })
-      .fail(function (_, __, err) {
-        console.error('Gagal load Select2:', err);
       });
+
+    });
+
+    // ================================
+    // TAMBAH SERVICE
+    // ================================
+   $(document).on('click','#btnAddService',function(){
+
+      $('#serviceForm')[0].reset();
+
+      $('#svs_id').val('');
+      $('#form_action').val('create');
+
+      $('#modalTitle').text('Tambah Servis');
+
+      $('#layanan').val(null).trigger('change');
+      $('#pekerja').val(null).trigger('change');
+
+      $('#serviceForm :input').prop('disabled', false);
+
+      $('.select2').each(function () {
+        setSelect2Disabled($(this), false);
+      });
+
+      $('.btn-success').show();
+
+      $('.btn-secondary').text('Batal');
+
+      modal.modal('show');
+
+    });
+
+    // ================================
+    // EDIT SERVICE
+    // ================================
+    $(document).on('click', '.btnEditService', function () {
+
+      const id = $(this).data('id');
+
+      $('#serviceForm :input').prop('disabled', false);
+
+      $('.btn-success').show();
+
+      $('.btn-secondary').text('Batal');
+
+      fetch(`controller/master/service_controller.php?action=get&id=${id}`)
+        .then(r => r.json())
+        .then(async d => {
+
+          $('#svs_id').val(d.svs_id);
+          $('#no_wo').val(d.no_wo);
+
+          $('#vendor_id').val(d.vendor_id).trigger('change');
+
+          $('#tgl_masuk').val(d.tgl_masuk);
+          $('#tgl_keluar').val(d.tgl_keluar);
+
+          $('#status').val(d.status);
+
+          $('#keterangan').val(d.keterangan);
+
+          await new Promise(r => setTimeout(r, 400));
+
+          $('#nama_kapal').val(d.nama_kapal);
+
+          $('#layanan').val(d.layanan).trigger('change');
+          $('#pekerja').val(d.pekerja).trigger('change');
+
+          $('#total_harga').val(
+            d.total_harga
+              ? parseFloat(d.total_harga).toLocaleString('id-ID')
+              : 0
+          );
+
+          $('#form_action').val('edit');
+
+          $('#modalTitle').text('Edit Servis');
+
+          $('.select2').each(function () {
+            setSelect2Disabled($(this), false);
+          });
+
+          modal.modal('show');
+
+        });
+
+    });
+
+    // ================================
+    // VENDOR -> KAPAL
+    // ================================
+    $('#vendor_id').on('change', function () {
+
+      const id = $(this).val();
+
+      const kapal = $('#nama_kapal');
+
+      kapal.prop('disabled', true)
+        .html('<option>Loading...</option>');
+
+      if (!id) {
+        kapal.html('<option value="">-- Pilih Vendor Dulu --</option>');
+        return;
+      }
+
+      fetch(`controller/master/get_kapal.php?vendor_id=${id}`)
+        .then(r => r.text())
+        .then(d => {
+
+          kapal.html('<option value="">-- Pilih Kapal --</option>' + d);
+
+          kapal.prop('disabled', false);
+
+        });
+
+    });
+
+    // ================================
+    // SIMPAN SERVICE
+    // ================================
+    $('#serviceForm').on('submit', function (e) {
+
+      e.preventDefault();
+
+      $.post(
+        'controller/master/service_controller.php',
+        $(this).serialize(),
+        function (res) {
+
+          if (res.trim() === 'OK') {
+
+            alert('Data servis berhasil disimpan!');
+
+            modal.modal('hide');
+
+            location.reload();
+
+          } else {
+
+            alert('Gagal menyimpan: ' + res);
+
+          }
+
+        }
+      );
+
+    });
+
+    // ================================
+    // DELETE SERVICE
+    // ================================
+    $(document).on('click', '.btnDeleteService', function () {
+
+      const id = $(this).data('id');
+
+      if (confirm('Yakin ingin menghapus data ini?')) {
+
+        location.href =
+          `controller/master/service_controller.php?action=delete&id=${id}`;
+
+      }
+
+    });
+
   });
 </script>
 

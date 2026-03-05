@@ -15,6 +15,18 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
 }
 ?>
 
+<style>
+  /* Small devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+    ...
+  }
+
+  /* Medium devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+    ...
+  }
+</style>
+
 <div class="container-fluid px-4 mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="mb-0">👥 Manajemen User</h4>
@@ -92,7 +104,8 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="userModalLabel"><i class="fa fa-user-plus me-2"></i><span id="modalTitle">Tambah User</span></h5>
+        <h5 class="modal-title" id="userModalLabel"><i class="fa fa-user-plus me-2"></i><span id="modalTitle">Tambah
+            User</span></h5>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -106,7 +119,8 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
           <!-- Username -->
           <div class="mb-3">
             <label class="form-label">Username <span class="text-danger">*</span></label>
-            <input type="text" name="usr_username" id="username" class="form-control" required placeholder="Tanpa spasi">
+            <input type="text" name="usr_username" id="username" class="form-control" required
+              placeholder="Tanpa spasi">
           </div>
 
           <!-- Nama -->
@@ -118,7 +132,8 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
           <!-- Email -->
           <div class="mb-3">
             <label class="form-label">Email</label>
-            <input type="email" name="usr_email" id="email" class="form-control" placeholder="Masukkan email (opsional)">
+            <input type="email" name="usr_email" id="email" class="form-control"
+              placeholder="Masukkan email (opsional)">
           </div>
 
           <!-- No. HP -->
@@ -192,12 +207,14 @@ if ($_SESSION['sess_usr_status'] !== 'Admin') {
 
           <div class="form-group mb-3">
             <label>Password Baru</label>
-            <input type="text" name="new_pass" id="new_pass" class="form-control" required minlength="6" placeholder="Masukkan password baru">
+            <input type="text" name="new_pass" id="new_pass" class="form-control" required minlength="6"
+              placeholder="Masukkan password baru">
           </div>
 
           <div class="form-group mb-3">
             <label>Konfirmasi Password Baru</label>
-            <input type="text" name="confirm_pass" id="confirm_pass" class="form-control" required minlength="6" placeholder="Ulangi password baru">
+            <input type="text" name="confirm_pass" id="confirm_pass" class="form-control" required minlength="6"
+              placeholder="Ulangi password baru">
           </div>
         </div>
 
