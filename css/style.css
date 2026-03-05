@@ -1,39 +1,39 @@
 /*css barang.php*/
-.pop_cari{
-	position:absolute;
-	color:#FFF;
-	min-width:350px;
-	height:200px; 
-	z-index:100;
-	background:#E60938;
-	box-shadow:0 0 20px #33FF33;
-	border-radius:10px;
-	overflow:scroll;
-    display:none;
+.pop_cari {
+  position: absolute;
+  color: #fff;
+  min-width: 350px;
+  height: 200px;
+  z-index: 100;
+  background: #e60938;
+  box-shadow: 0 0 20px #33ff33;
+  border-radius: 10px;
+  overflow: scroll;
+  display: none;
 }
 
-.hover li:hover{
-	background-color:#2CF6F4;
-	border-radius: 5px;
-	cursor:default;
+.hover li:hover {
+  background-color: #2cf6f4;
+  border-radius: 5px;
+  cursor: default;
 }
-.hover{
-	list-style: none;
-	text-align:left;
-	padding: 3px;
+.hover {
+  list-style: none;
+  text-align: left;
+  padding: 3px;
 }
 
 /*index.php atau halaman_utama.php*/
-.border{
-	height: 150px;
-	padding: 60px;
-	text-align: center;
-	font-weight: bold;
-	font-size: 20px;
+.border {
+  height: 150px;
+  padding: 60px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
 }
-.border a{
-	text-decoration: none;
-	color: black;
+.border a {
+  text-decoration: none;
+  color: black;
 }
 
 /* ========================================= */
@@ -53,7 +53,7 @@
     width: 230px;
     height: 100vh;
     overflow-y: auto;
-    background-color: #132A4A !important;
+    background-color: #132a4a !important;
     left: -250px;
     transition: left 0.3s ease;
   }
@@ -116,7 +116,7 @@ footer.sticky-footer {
   position: relative;
   bottom: 0;
   width: 100%;
-  background: #132A4A;
+  background: #132a4a;
   color: #fff;
   padding: 10px 0;
   text-align: center;
@@ -135,11 +135,11 @@ footer.sticky-footer {
 
 /* Warna navbar & hover */
 .bg_tem {
-  background-color: #132A4A !important;
+  background-color: #132a4a !important;
 }
 
 .bg li a:hover {
-  background-color: #F02828;
+  background-color: #f02828;
 }
 
 /* Pastikan isi dashboard rapi di mobile */
@@ -158,5 +158,32 @@ footer.sticky-footer {
 
   footer.sticky-footer small {
     font-size: 12px;
+  }
+}
+
+@media (max-width: 991.98px) {
+  #mainNav .navbar-nav {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  #mainNav .nav-logout {
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  #mainNav .nav-logout .nav-link {
+    width: 100%;
+    text-align: left;
+  }
+
+  #mainNav .navbar-nav.ml-auto {
+    width: 100%;
+  }
+
+  #mainNav .collapse.navbar-collapse {
+    transition: all 0.25s ease;
   }
 }
