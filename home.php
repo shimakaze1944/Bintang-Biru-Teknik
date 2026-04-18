@@ -113,7 +113,7 @@ $isAdmin = in_array($_SESSION['sess_usr_status'], ['Admin', 'BBTeknik']);
     .content-wrapper {
       background: #fff;
       padding: 100px 20px 20px 20px;
-      min-height: calc(300vh - 56px);
+      min-height: calc(105vh - 56px);
     }
 
     footer.sticky-footer {
